@@ -75,8 +75,18 @@ const ProductAPI = {
     formatImageUrl(imagePath) {
         if (!imagePath) return 'assets/textile-haven-LOGO.png';
         if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
-        const clean = imagePath.startsWith('/') ? imagePath : '/' + imagePath;
-        return `${API_CONFIG.imageBaseUrl}${clean}`;
+
+        // Remove leading slash to ensure relative path works from current page
+        const relativePath = imagePath.replace(/^\/+/, '');
+
+        // If running directly on Spring Boot server (port 8080)
+        if (window.location.origin.includes(':8080')) {
+            return '/' + relativePath;
+        }
+
+        // When running on Apache, Live Server, or file system:
+        // Return relative path so it loads from frontend/assets/images/...
+        return relativePath;
     },
     formatPrice(price) {
         const num = parseFloat(price) || 0;

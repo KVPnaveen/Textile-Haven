@@ -29,14 +29,18 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String absoluteUploadPath = Paths.get(uploadDir).toAbsolutePath().toUri().toString();
         
-        // Also locate legacy images if present
+        // Also locate frontend and legacy images
+        File frontendImages = new File("../frontend/assets/images");
+        String frontendUri = frontendImages.toURI().toString();
         File legacyAdminImages = new File("../backend_php_backup/admin/assets/images");
         String legacyUri = legacyAdminImages.toURI().toString();
 
         registry.addResourceHandler("/assets/images/**")
                 .addResourceLocations(
+                        frontendUri.endsWith("/") ? frontendUri : frontendUri + "/",
                         absoluteUploadPath.endsWith("/") ? absoluteUploadPath : absoluteUploadPath + "/",
                         legacyUri.endsWith("/") ? legacyUri : legacyUri + "/",
+                        "file:../frontend/assets/images/",
                         "classpath:/static/assets/images/",
                         "file:uploads/images/"
                 );

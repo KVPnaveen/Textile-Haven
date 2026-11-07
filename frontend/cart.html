@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Textile Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6',
+                        secondary: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Navbar Container -->
+    <div id="navbar-container"></div>
+
+    <!-- Page Header -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-extrabold text-gray-900">Your Shopping Cart</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+        <div id="cart-container">
+            <!-- Skeleton Loader -->
+            <div class="bg-white rounded-xl shadow-sm p-6 animate-pulse h-64"></div>
+        </div>
+    </main>
+
+    <!-- Footer Container -->
+    <div id="footer-container" class="mt-auto"></div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function loadCart() {
+            const container = document.getElementById('cart-container');
+
+            if (!Auth.isLoggedIn()) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-12 text-center shadow-sm border max-w-xl mx-auto">
+                        <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Please Login to View Your Cart</h2>
+                        <p class="text-gray-500 mb-6">Sign in to see saved items, adjust quantities, and checkout.</p>
+                        <button onclick="openAuthModal('login')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-xl transition shadow">
+                            Login Now
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const res = await CartAPI.getCart();
+                if (!res.success || !res.data) {
+                    container.innerHTML = '<div class="text-center py-12 text-red-500">Failed to load cart.</div>';
+                    return;
+                }
+
+                const { items, total } = res.data;
+
+                if (!items || items.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-2xl p-12 text-center shadow-sm border max-w-xl mx-auto">
+                            <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Cart is Empty</h2>
+                            <p class="text-gray-500 mb-6">Explore our curated collection of women's apparel.</p>
+                            <a href="products.html" class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-xl transition shadow">
+                                Start Shopping
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Cart Items List -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="flex justify-between items-center pb-2">
+                            <span class="text-sm font-semibold text-gray-500 uppercase">${items.length} Item(s) in Cart</span>
+                            <button onclick="handleClearCart()" class="text-xs text-red-500 hover:text-red-700 font-semibold">Clear Cart</button>
+                        </div>
+
+                        ${items.map(item => {
+                            const img = ProductAPI.formatImageUrl(item.mainImage || item.image1);
+                            return `
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-5 transition hover:shadow-md">
+                                <img src="${img}" alt="${escapeHtml(item.productName)}"
+                                     class="w-24 h-28 object-cover rounded-xl bg-gray-100 flex-shrink-0"
+                                     onerror="this.src='assets/textile-haven-LOGO.png'">
+                                <div class="flex-1 w-full">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="font-bold text-gray-900 text-lg hover:text-purple-600">
+                                            <a href="product-details.html?id=${item.productId}">${escapeHtml(item.productName)}</a>
+                                        </h3>
+                                        <button onclick="handleRemove(${item.id})" class="text-gray-400 hover:text-red-600 p-1">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-3 mt-1 text-xs">
+                                        ${item.sizeName ? `
+                                            <span class="bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded-full">Size: ${escapeHtml(item.sizeName)}</span>
+                                        ` : ''}
+                                        <span class="text-gray-500">Unit: ${ProductAPI.formatPrice(item.price)}</span>
+                                    </div>
+
+                                    <div class="flex justify-between items-center mt-4 pt-3 border-t">
+                                        <div class="flex items-center space-x-2">
+                                            <button onclick="handleUpdateQty(${item.id}, ${item.quantity - 1})" class="w-8 h-8 rounded-lg border font-bold text-gray-600 hover:bg-gray-100 flex items-center justify-center">-</button>
+                                            <span class="w-8 text-center font-bold">${item.quantity}</span>
+                                            <button onclick="handleUpdateQty(${item.id}, ${item.quantity + 1})" class="w-8 h-8 rounded-lg border font-bold text-gray-600 hover:bg-gray-100 flex items-center justify-center">+</button>
+                                        </div>
+                                        <span class="text-lg font-black text-gray-900">${ProductAPI.formatPrice(item.subtotal)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Summary Card -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Summary</h2>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Subtotal</span>
+                                    <span class="font-semibold text-gray-900">${ProductAPI.formatPrice(total)}</span>
+                                </div>
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Shipping</span>
+                                    <span class="font-semibold text-green-600">Free</span>
+                                </div>
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Taxes</span>
+                                    <span class="font-semibold text-gray-900">$0.00</span>
+                                </div>
+                                <div class="border-t pt-3 flex justify-between items-center text-base">
+                                    <span class="font-extrabold text-gray-900">Total</span>
+                                    <span class="font-black text-2xl text-purple-600">${ProductAPI.formatPrice(total)}</span>
+                                </div>
+                            </div>
+
+                            <a href="checkout.html" class="mt-6 w-full block text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg">
+                                Proceed to Checkout
+                            </a>
+
+                            <div class="mt-4 text-center">
+                                <a href="products.html" class="text-xs text-gray-500 hover:text-purple-600">
+                                    &larr; Or continue shopping
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = '<div class="text-center py-12 text-red-500">Error connecting to Spring Boot server.</div>';
+            }
+        }
+
+        async function handleUpdateQty(cartId, newQty) {
+            try {
+                const res = await CartAPI.updateQuantity(cartId, newQty);
+                if (res.success) {
+                    loadCart();
+                } else {
+                    showToast(res.message || 'Failed to update quantity', 'error');
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+            }
+        }
+
+        async function handleRemove(cartId) {
+            try {
+                const res = await CartAPI.removeFromCart(cartId);
+                if (res.success) {
+                    showToast('Item removed', 'success');
+                    loadCart();
+                }
+            } catch (e) {
+                showToast('Failed to remove item', 'error');
+            }
+        }
+
+        async function handleClearCart() {
+            if (!confirm('Are you sure you want to empty your cart?')) return;
+            try {
+                const res = await CartAPI.clearCart();
+                if (res.success) {
+                    showToast('Cart cleared', 'success');
+                    loadCart();
+                }
+            } catch (e) {
+                showToast('Failed to clear cart', 'error');
+            }
+        }
+
+        window.addEventListener('auth-changed', loadCart);
+        document.addEventListener('DOMContentLoaded', loadCart);
+    </script>
+</body>
+</html>
+

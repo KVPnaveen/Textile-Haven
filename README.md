@@ -1,151 +1,128 @@
-# 🛍️ Textile Haven - Women's Fashion E-commerce
+# 🛍️ Textile Haven - Women's Fashion E-commerce (Spring Boot + Modern Frontend)
 
-A modern, responsive e-commerce website for women's clothing built with PHP, MySQL, and Tailwind CSS.
+A modern, responsive e-commerce web application for women's clothing powered by a **Spring Boot 4 / Java 21 REST API** backend, **MySQL**, and a client-side **Tailwind CSS + JavaScript** frontend. The legacy PHP backend has been successfully replaced.
+
+---
 
 ## ✨ Features
 
-- **Modern UI**: Beautiful, responsive design with Tailwind CSS
-- **Product Management**: Admin dashboard for CRUD operations
-- **Shopping Cart**: Add, remove, and manage cart items
-- **User Authentication**: Login/signup system with admin roles
-- **Product Search**: Search functionality across products
-- **Mobile Responsive**: Works perfectly on all devices
+- **Modern Architecture**: Spring Boot REST API backend + decoupled modern HTML5/JS frontend
+- **User Authentication**: Secure BCrypt authentication with login, registration, and admin authorization
+- **Product Catalog**: Paginated product listings, real-time keyword search, and featured collections
+- **Size & Inventory Management**: Multi-size inventory support (XS, S, M, L, XL, XXL) with live stock tracking
+- **Shopping Cart**: Real-time quantity adjustment, stock limit enforcement, cart badges, and subtotal calculation
+- **Checkout & Order Processing**: Complete checkout flow that validates stock, deducts inventory, and generates order IDs
+- **Admin Dashboard**: Web dashboard to add, edit, and delete products, manage size-level stock, and upload images
+- **Dual Serving**: Frontend can be accessed directly through Spring Boot (`http://localhost:8080/`) or standalone with CORS support
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+- **Java 21+** (JDK 21)
+- **MySQL 5.7+ / 8.0+ / MariaDB** (via XAMPP or standalone on port 3306)
 
-- XAMPP/WAMP (Apache + MySQL + PHP)
-- PHP 7.4+ with PDO MySQL extension
+### 1. Database Setup
+Ensure MySQL is running on `localhost:3306` with database `textile_haven`:
+- If you already imported the database, your data is preserved.
+- To set up fresh, run `springboot-backend/src/main/resources/schema.sql` in MySQL / phpMyAdmin.
+- Default database configuration (`springboot-backend/src/main/resources/application.properties`):
+  ```properties
+  spring.datasource.url=jdbc:mysql://localhost:3306/textile_haven?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+  spring.datasource.username=root
+  spring.datasource.password=
+  ```
 
-### Installation
+### 2. Run the Spring Boot Backend
+Open a terminal in the `springboot-backend` directory and execute:
 
-1. **Clone/Download** the project to your web server directory
+```powershell
+# Windows PowerShell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
+cd springboot-backend
+.\mvnw.cmd spring-boot:run
+```
 
-   ```
-   C:\xampp\htdocs\textile-haven\
-   ```
+Or run the pre-built JAR:
+```powershell
+java -jar target/springboot-backend-0.0.1-SNAPSHOT.jar
+```
 
-2. **Create Database**
+The server starts on: **`http://localhost:8080/`**
 
-   - Open phpMyAdmin: `http://localhost/phpmyadmin`
-   - Create database: `textile_haven`
-   - Import: `database/schema.sql`
+### 3. Open the Frontend
+You can access the website in two ways:
+1. **Directly via Spring Boot** (Recommended):
+   - Visit: [http://localhost:8080/](http://localhost:8080/)
+2. **Via any browser / Live Server / Apache**:
+   - Open `frontend/index.html` (e.g. `http://localhost/textile-haven-main/frontend/index.html`)
 
-3. **Configure Database**
+---
 
-   - Edit `includes/db.php` if needed
-   - Default: `localhost`, `root`, no password
+## 🔑 Default Credentials
 
-4. **Start Server**
-   - Start Apache and MySQL in XAMPP
-   - Visit: `http://localhost/textile-haven/`
+- **Admin Account**:
+  - **Username / Email**: `admin` or `admin@textilehaven.com`
+  - **Password**: `admin123`
+  - **Admin Dashboard**: [http://localhost:8080/admin.html](http://localhost:8080/admin.html)
+
+---
 
 ## 📁 Project Structure
 
 ```
-textile-haven/
-├── admin/
-│   └── products.php          # Admin dashboard
-├── auth/
-│   ├── login.php            # Login handler
-│   ├── register.php         # Registration handler
-│   └── logout.php           # Logout handler
-├── includes/
-│   ├── db.php              # Database connection
-│   ├── header.php          # Common header
-│   └── footer.php          # Common footer
-├── models/
-│   ├── User.php            # User management
-│   ├── Product.php         # Product management
-│   └── Cart.php            # Shopping cart
-├── database/
-│   └── schema.sql          # Database schema
-├── index.php               # Home page
-├── products.php            # Products listing
-└── cart.php                # Shopping cart
+textile-haven-main/
+├── frontend/                     # Modern Frontend (HTML5 + Tailwind CSS + Vanilla JS)
+│   ├── js/
+│   │   └── api.js                # Centralized REST API client & components
+│   ├── assets/                   # Images and branding assets
+│   ├── index.html                # Home page with hero and featured collection
+│   ├── products.html             # Product catalog with search and pagination
+│   ├── product-details.html      # Product detail view with size and stock selection
+│   ├── cart.html                 # Shopping cart management
+│   ├── checkout.html             # Shipping details and order placement
+│   ├── checkout-success.html     # Order confirmation receipt
+│   └── admin.html                # Admin product & inventory management
+│
+├── springboot-backend/           # Spring Boot REST API Backend
+│   ├── src/main/java/springboot_backend/
+│   │   ├── config/               # WebConfig (CORS, Static/Image Resources), PasswordEncoder
+│   │   ├── controller/           # Auth, Product, Size, Cart, and Order REST Controllers
+│   │   ├── dto/                  # Request and Response transfer models
+│   │   ├── entity/               # JPA Entities (User, Product, Size, ProductSize, CartItem)
+│   │   ├── repository/           # Spring Data JPA Repositories
+│   │   └── service/              # Business logic & file upload storage
+│   ├── src/main/resources/
+│   │   ├── application.properties
+│   │   ├── schema.sql            # Database schema
+│   │   └── static/               # Bundled frontend assets served by Spring Boot
+│   └── pom.xml
+│
+└── backend_php_backup/           # Archived legacy PHP backend (inactive)
 ```
-
-## 🔑 Admin Access
-
-- **URL**: `http://localhost/textile-haven/admin/products.php`
-- **Email**: `admin@textilehaven.com`
-- **Password**: `admin123`
-
-## 🎨 Pages
-
-1. **Home Page** (`index.php`)
-
-   - Hero section with call-to-action
-   - Featured products (6 items)
-   - Category sections
-   - Features section
-
-2. **Products Page** (`products.php`)
-
-   - All products with search
-   - Pagination (12 per page)
-   - Add to cart functionality
-
-3. **Shopping Cart** (`cart.php`)
-
-   - View cart items
-   - Update quantities
-   - Remove items
-
-4. **Admin Dashboard** (`admin/products.php`)
-   - Add new products
-   - Edit existing products
-   - Delete products
-   - Manage inventory
-
-## 🛠️ Technologies Used
-
-- **Backend**: PHP 7.4+ with OOP
-- **Database**: MySQL with PDO
-- **Frontend**: HTML5, Tailwind CSS, JavaScript
-- **Server**: Apache (XAMPP)
-
-## 📊 Database Schema
-
-- **users**: User accounts and authentication
-- **products**: Product catalog with inventory
-- **cart**: Shopping cart items
-
-## 🎯 OOP Implementation
-
-- **User Class**: Authentication, registration, admin checks
-- **Product Class**: CRUD operations, search, pagination
-- **Cart Class**: Add, remove, update cart items
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-1. **Products not showing**
-
-   - Check PDO MySQL extension is loaded
-   - Restart Apache after php.ini changes
-
-2. **Admin can't login**
-
-   - Verify admin user exists in database
-   - Check password hash is correct
-
-3. **Database connection failed**
-   - Ensure MySQL is running
-   - Check database credentials in `includes/db.php`
-
-### Quick Fixes
-
-- **Clear browser cache**: Ctrl+F5
-- **Check browser console**: F12 for errors
-- **Restart Apache**: In XAMPP Control Panel
-
-## 📝 License
-
-This project is for educational purposes. Feel free to modify and use as needed.
 
 ---
 
-**Textile Haven** - Your perfect fashion destination! 🎉
+## 🔌 REST API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/login` | Authenticate user (email/username + password) |
+| `POST` | `/api/auth/register` | Register new user account |
+| `GET` | `/api/auth/me` | Get currently authenticated user profile |
+| `POST` | `/api/auth/logout` | Terminate session |
+| `GET` | `/api/products` | Retrieve products (supports `search`, `page`, `size`, `all`) |
+| `GET` | `/api/products/featured` | Retrieve top featured products |
+| `GET` | `/api/products/{id}` | Get detailed product information with size stock |
+| `POST` | `/api/products` | Add new product with image uploads (Admin) |
+| `PUT` | `/api/products/{id}` | Update product & inventory (Admin) |
+| `DELETE` | `/api/products/{id}` | Delete product (Admin) |
+| `GET` | `/api/sizes` | Get all available clothing sizes |
+| `GET` | `/api/sizes/product/{id}`| Get stock breakdown per size for a product |
+| `GET` | `/api/cart` | Get current user's cart items and total |
+| `POST` | `/api/cart` | Add item to cart with size and quantity |
+| `PUT` | `/api/cart/{id}` | Update item quantity in cart |
+| `DELETE` | `/api/cart/{id}` | Remove specific item from cart |
+| `DELETE` | `/api/cart` | Clear entire cart |
+| `POST` | `/api/checkout` | Process order, reduce stock, clear cart |

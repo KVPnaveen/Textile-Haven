@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Textile Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6',
+                        secondary: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Navbar Container -->
+    <div id="navbar-container"></div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-8">Complete Your Order</h1>
+
+        <div id="checkout-content" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Loading Skeleton -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm animate-pulse h-96"></div>
+            <div class="lg:col-span-1 bg-white rounded-2xl p-6 shadow-sm animate-pulse h-72"></div>
+        </div>
+    </main>
+
+    <!-- Footer Container -->
+    <div id="footer-container" class="mt-auto"></div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let cartData = null;
+
+        async function initCheckout() {
+            const container = document.getElementById('checkout-content');
+
+            if (!Auth.isLoggedIn()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const res = await CartAPI.getCart();
+                if (!res.success || !res.data || !res.data.items || res.data.items.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-3 bg-white rounded-2xl p-12 text-center shadow-sm border max-w-lg mx-auto">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Cart is Empty</h2>
+                            <p class="text-gray-500 mb-6">Add items to your cart before proceeding to checkout.</p>
+                            <a href="products.html" class="bg-purple-600 text-white font-bold px-6 py-3 rounded-xl inline-block">Browse Products</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                cartData = res.data;
+                const user = Auth.getUser();
+
+                container.innerHTML = `
+                <!-- Shipping and Payment Form -->
+                <div class="lg:col-span-2">
+                    <form id="checkout-form" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-6">
+                        <h2 class="text-xl font-bold text-gray-900 border-b pb-3">Shipping Details</h2>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Full Name *</label>
+                                <input type="text" id="fullName" required value="${escapeHtml(user.username || '')}"
+                                    class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email Address *</label>
+                                <input type="email" id="email" required value="${escapeHtml(user.email || '')}"
+                                    class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Street Address *</label>
+                            <input type="text" id="address" required placeholder="123 Main St, Apt 4B"
+                                class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">City *</label>
+                                <input type="text" id="city" required placeholder="New York"
+                                    class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Postal Code *</label>
+                                <input type="text" id="postalCode" required placeholder="10001"
+                                    class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Phone Number *</label>
+                                <input type="tel" id="phone" required placeholder="+1 555-0199"
+                                    class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <h2 class="text-xl font-bold text-gray-900 border-b pb-3 pt-4">Payment Method</h2>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-4 border rounded-xl cursor-pointer hover:bg-gray-50 border-purple-500 bg-purple-50">
+                                <input type="radio" name="payment" value="card" checked class="text-purple-600 focus:ring-purple-500 h-4 w-4">
+                                <span class="ml-3 font-semibold text-gray-800">Credit / Debit Card (Online Demo)</span>
+                            </label>
+                            <label class="flex items-center p-4 border rounded-xl cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="payment" value="cod" class="text-purple-600 focus:ring-purple-500 h-4 w-4">
+                                <span class="ml-3 font-semibold text-gray-800">Cash on Delivery</span>
+                            </label>
+                        </div>
+
+                        <div id="checkout-error" class="hidden p-3 rounded-lg bg-red-100 text-red-700 text-sm font-medium"></div>
+
+                        <button type="submit" id="place-order-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl shadow-lg transition duration-200">
+                            Confirm & Place Order
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Summary Column -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                        <h2 class="text-xl font-bold text-gray-900 border-b pb-3 mb-4">Summary (${cartData.count} items)</h2>
+                        <div class="max-h-72 overflow-y-auto space-y-3 divide-y pr-1">
+                            ${cartData.items.map(item => `
+                                <div class="pt-3 first:pt-0 flex justify-between items-center text-sm">
+                                    <div class="flex-1 pr-3">
+                                        <div class="font-bold text-gray-800">${escapeHtml(item.productName)}</div>
+                                        <div class="text-xs text-gray-500">Qty: ${item.quantity} ${item.sizeName ? `• Size: ${escapeHtml(item.sizeName)}` : ''}</div>
+                                    </div>
+                                    <span class="font-bold text-gray-900">${ProductAPI.formatPrice(item.subtotal)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="border-t mt-4 pt-4 space-y-2 text-sm">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span class="font-semibold text-gray-900">${ProductAPI.formatPrice(cartData.total)}</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Shipping</span>
+                                <span class="font-semibold text-green-600">Free</span>
+                            </div>
+                            <div class="flex justify-between items-center border-t pt-3 text-base">
+                                <span class="font-bold text-gray-900">Total</span>
+                                <span class="font-black text-2xl text-purple-600">${ProductAPI.formatPrice(cartData.total)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                document.getElementById('checkout-form')?.addEventListener('submit', handleCheckoutSubmit);
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = '<div class="col-span-3 text-center py-12 text-red-500">Error loading checkout information.</div>';
+            }
+        }
+
+        async function handleCheckoutSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('place-order-btn');
+            const errDiv = document.getElementById('checkout-error');
+            errDiv.classList.add('hidden');
+
+            const payload = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                postalCode: document.getElementById('postalCode').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                paymentMethod: document.querySelector('input[name="payment"]:checked')?.value || 'card'
+            };
+
+            btn.disabled = true;
+            btn.textContent = 'Processing Order...';
+
+            try {
+                const res = await OrderAPI.checkout(payload);
+                if (res.success && res.data) {
+                    sessionStorage.setItem('th_last_order', JSON.stringify(res.data));
+                    window.location.href = 'checkout-success.html';
+                } else {
+                    errDiv.textContent = res.message || 'Failed to place order';
+                    errDiv.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Confirm & Place Order';
+                }
+            } catch (e) {
+                errDiv.textContent = 'Network error while placing order';
+                errDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Confirm & Place Order';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initCheckout);
+    </script>
+</body>
+</html>
+

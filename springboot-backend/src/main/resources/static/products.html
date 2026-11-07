@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Collection - Textile Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6',
+                        secondary: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Navbar Container -->
+    <div id="navbar-container"></div>
+
+    <!-- Page Header -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900" id="page-title">Women's Fashion Collection</h1>
+                    <p class="text-gray-500 mt-1" id="product-count">Loading products...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <!-- Search Bar -->
+        <div class="mb-8">
+            <form id="search-form" class="flex gap-3 max-w-xl">
+                <div class="relative flex-1">
+                    <input type="text" id="search-input" placeholder="Search by dress name or description..."
+                        class="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm">
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-xl transition shadow">
+                    Search
+                </button>
+                <button type="button" id="clear-search-btn" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2.5 rounded-xl transition">
+                    Clear
+                </button>
+            </form>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Skeleton cards -->
+            <div class="bg-white rounded-xl shadow-sm h-80 animate-pulse"></div>
+            <div class="bg-white rounded-xl shadow-sm h-80 animate-pulse"></div>
+            <div class="bg-white rounded-xl shadow-sm h-80 animate-pulse"></div>
+            <div class="bg-white rounded-xl shadow-sm h-80 animate-pulse"></div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination-container" class="mt-12 flex justify-center items-center gap-2"></div>
+    </main>
+
+    <!-- Footer Container -->
+    <div id="footer-container" class="mt-auto"></div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let currentPage = 1;
+        let currentSearch = '';
+
+        async function loadProducts(page = 1, search = '') {
+            currentPage = page;
+            currentSearch = search;
+
+            const grid = document.getElementById('products-grid');
+            const countLabel = document.getElementById('product-count');
+            const titleLabel = document.getElementById('page-title');
+            const clearBtn = document.getElementById('clear-search-btn');
+
+            if (search) {
+                clearBtn.classList.remove('hidden');
+                titleLabel.textContent = `Search Results for "${search}"`;
+            } else {
+                clearBtn.classList.add('hidden');
+                titleLabel.textContent = "Women's Fashion Collection";
+            }
+
+            try {
+                const res = await ProductAPI.getProducts({ page: page, size: 12, search: search });
+                if (!res.success || !res.data) {
+                    grid.innerHTML = '<div class="col-span-4 text-center py-12 text-gray-500">Failed to load products.</div>';
+                    return;
+                }
+
+                const { products, total, pages } = res.data;
+                countLabel.textContent = `Showing ${products.length} of ${total} products`;
+
+                if (products.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-4 text-center py-16">
+                            <svg class="mx-auto h-16 w-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                            <h3 class="mt-4 text-lg font-bold text-gray-700">No products found</h3>
+                            <p class="text-gray-500 mt-1">Try adjusting your search terms or clear the filter.</p>
+                            <button onclick="clearSearch()" class="mt-4 inline-block bg-purple-600 text-white font-semibold px-5 py-2 rounded-lg">View All Products</button>
+                        </div>
+                    `;
+                    document.getElementById('pagination-container').innerHTML = '';
+                    return;
+                }
+
+                grid.innerHTML = products.map(product => {
+                    const mainImg = ProductAPI.formatImageUrl(product.mainImage);
+                    const secondaryImg = product.secondaryImage ? ProductAPI.formatImageUrl(product.secondaryImage) : null;
+                    const hasStock = product.hasStock;
+
+                    return `
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col border border-gray-100 group">
+                        <div class="relative aspect-[3/4] overflow-hidden bg-gray-100">
+                            <a href="product-details.html?id=${product.id}">
+                                <img src="${mainImg}" alt="${escapeHtml(product.name)}"
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                     onerror="this.src='assets/textile-haven-LOGO.png'">
+                                ${secondaryImg ? `
+                                    <img src="${secondaryImg}" alt="${escapeHtml(product.name)}"
+                                         class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                         onerror="this.style.display='none'">
+                                ` : ''}
+                            </a>
+                            <span class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                hasStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }">
+                                ${hasStock ? 'In Stock' : 'Out of Stock'}
+                            </span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-gray-900 group-hover:text-purple-600 transition">
+                                    <a href="product-details.html?id=${product.id}">${escapeHtml(product.name)}</a>
+                                </h3>
+                                <p class="text-gray-500 text-xs mt-1 line-clamp-2">${escapeHtml(product.description || '')}</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t flex items-center justify-between">
+                                <span class="text-xl font-black text-purple-600">${ProductAPI.formatPrice(product.price)}</span>
+                                <a href="product-details.html?id=${product.id}" class="bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 text-xs font-bold px-3 py-2 rounded-lg transition">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                renderPagination(pages, page);
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<div class="col-span-4 text-center py-12 text-red-500">Error connecting to Spring Boot server.</div>';
+            }
+        }
+
+        function renderPagination(totalPages, activePage) {
+            const container = document.getElementById('pagination-container');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            if (activePage > 1) {
+                html += `<button onclick="loadProducts(${activePage - 1}, currentSearch)" class="px-3 py-1.5 border rounded-lg bg-white hover:bg-gray-50 text-sm font-medium">Prev</button>`;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === activePage) {
+                    html += `<span class="px-3 py-1.5 border rounded-lg bg-purple-600 text-white text-sm font-bold">${i}</span>`;
+                } else {
+                    html += `<button onclick="loadProducts(${i}, currentSearch)" class="px-3 py-1.5 border rounded-lg bg-white hover:bg-gray-50 text-sm font-medium">${i}</button>`;
+                }
+            }
+
+            if (activePage < totalPages) {
+                html += `<button onclick="loadProducts(${activePage + 1}, currentSearch)" class="px-3 py-1.5 border rounded-lg bg-white hover:bg-gray-50 text-sm font-medium">Next</button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            loadProducts(1, '');
+        }
+
+        document.getElementById('search-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const q = document.getElementById('search-input').value.trim();
+            loadProducts(1, q);
+        });
+
+        document.getElementById('clear-search-btn')?.addEventListener('click', clearSearch);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const initialSearch = params.get('search') || '';
+            if (initialSearch) {
+                document.getElementById('search-input').value = initialSearch;
+            }
+            loadProducts(1, initialSearch);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Textile Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6',
+                        secondary: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Navbar Container -->
+    <div id="navbar-container"></div>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-6 text-sm text-gray-500">
+            <a href="index.html" class="hover:text-purple-600">Home</a>
+            <span class="mx-2">/</span>
+            <a href="products.html" class="hover:text-purple-600">Shop</a>
+            <span class="mx-2">/</span>
+            <span id="breadcrumb-product-name" class="text-gray-800 font-medium">Loading...</span>
+        </nav>
+
+        <div id="product-content" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Loading Skeleton -->
+            <div class="grid grid-cols-1 md:grid-cols-2 p-8 gap-8 animate-pulse">
+                <div class="aspect-[3/4] bg-gray-200 rounded-xl"></div>
+                <div class="space-y-4">
+                    <div class="h-8 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-6 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-24 bg-gray-200 rounded"></div>
+                    <div class="h-12 bg-gray-200 rounded w-1/2"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Container -->
+    <div id="footer-container" class="mt-auto"></div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let currentProduct = null;
+        let selectedSizeId = null;
+        let currentQuantity = 1;
+
+        async function loadProductDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const container = document.getElementById('product-content');
+
+            if (!id) {
+                window.location.href = 'products.html';
+                return;
+            }
+
+            try {
+                const res = await ProductAPI.getById(id);
+                if (!res.success || !res.data) {
+                    container.innerHTML = '<div class="p-12 text-center text-red-500">Product not found. <a href="products.html" class="underline ml-2">Back to Shop</a></div>';
+                    return;
+                }
+
+                currentProduct = res.data;
+                document.getElementById('breadcrumb-product-name').textContent = currentProduct.name;
+                document.title = `${currentProduct.name} - Textile Haven`;
+
+                renderProduct(currentProduct);
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = '<div class="p-12 text-center text-red-500">Error loading product details from Spring Boot backend.</div>';
+            }
+        }
+
+        function renderProduct(product) {
+            const container = document.getElementById('product-content');
+            const mainImg = ProductAPI.formatImageUrl(product.mainImage);
+            const secondaryImg = product.secondaryImage ? ProductAPI.formatImageUrl(product.secondaryImage) : null;
+            const hasStock = product.hasStock;
+
+            // Auto-select first size with stock if available
+            const inStockSizes = (product.sizes || []).filter(s => s.stockQuantity > 0);
+            if (inStockSizes.length > 0) {
+                selectedSizeId = inStockSizes[0].sizeId;
+            }
+
+            container.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 p-6 md:p-10">
+                <!-- Images Column -->
+                <div>
+                    <div class="relative aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden shadow-inner border">
+                        <img id="main-product-img" src="${mainImg}" alt="${escapeHtml(product.name)}"
+                             class="w-full h-full object-cover transition-opacity duration-300"
+                             onerror="this.src='assets/textile-haven-LOGO.png'">
+                    </div>
+                    ${secondaryImg ? `
+                        <div class="flex gap-3 mt-4">
+                            <button onclick="switchImage('${mainImg}')" class="w-20 h-24 rounded-lg overflow-hidden border-2 border-purple-600 focus:outline-none">
+                                <img src="${mainImg}" class="w-full h-full object-cover">
+                            </button>
+                            <button onclick="switchImage('${secondaryImg}')" class="w-20 h-24 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-purple-600 focus:outline-none">
+                                <img src="${secondaryImg}" class="w-full h-full object-cover">
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Info Column -->
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+                                hasStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }">
+                                ${hasStock ? `In Stock (${product.totalStock} available)` : 'Out of Stock'}
+                            </span>
+                        </div>
+
+                        <h1 class="text-3xl md:text-4xl font-black text-gray-900 mt-3">${escapeHtml(product.name)}</h1>
+                        <p class="text-3xl font-extrabold text-purple-600 mt-4">${ProductAPI.formatPrice(product.price)}</p>
+
+                        <div class="mt-6 border-t pt-4">
+                            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Description</h3>
+                            <p class="text-gray-600 mt-2 leading-relaxed text-sm md:text-base">${escapeHtml(product.description || 'No description provided.')}</p>
+                        </div>
+
+                        <!-- Sizes Selection -->
+                        ${product.sizes && product.sizes.length > 0 ? `
+                            <div class="mt-6 border-t pt-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Select Size</h3>
+                                    <span id="selected-size-label" class="text-xs text-purple-600 font-semibold"></span>
+                                </div>
+                                <div class="flex flex-wrap gap-2.5">
+                                    ${product.sizes.map(size => {
+                                        const isAvailable = size.stockQuantity > 0;
+                                        const isSelected = size.sizeId === selectedSizeId;
+                                        return `
+                                        <button type="button"
+                                            onclick="selectSize(${size.sizeId}, ${size.stockQuantity}, '${escapeHtml(size.name)}')"
+                                            ${!isAvailable ? 'disabled' : ''}
+                                            id="size-btn-${size.sizeId}"
+                                            class="px-4 py-2 rounded-xl text-sm font-bold border transition ${
+                                                isSelected 
+                                                    ? 'bg-purple-600 text-white border-purple-600 shadow'
+                                                    : isAvailable 
+                                                        ? 'bg-white text-gray-800 border-gray-300 hover:border-purple-600'
+                                                        : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60'
+                                            }">
+                                            ${escapeHtml(size.name)}
+                                            <span class="text-xs ml-1 ${isSelected ? 'text-purple-200' : 'text-gray-400'}">(${size.stockQuantity})</span>
+                                        </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- Quantity Selector -->
+                        <div class="mt-6 border-t pt-4">
+                            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Quantity</h3>
+                            <div class="flex items-center space-x-3">
+                                <button type="button" onclick="adjustQty(-1)" class="w-10 h-10 rounded-lg border border-gray-300 font-bold hover:bg-gray-100 text-gray-600 flex items-center justify-center">-</button>
+                                <span id="qty-display" class="w-12 text-center font-bold text-lg text-gray-800">1</span>
+                                <button type="button" onclick="adjustQty(1)" class="w-10 h-10 rounded-lg border border-gray-300 font-bold hover:bg-gray-100 text-gray-600 flex items-center justify-center">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-8 pt-6 border-t flex flex-col sm:flex-row gap-4">
+                        <button type="button" id="add-to-cart-btn" onclick="handleAddToCart()"
+                            ${!hasStock ? 'disabled' : ''}
+                            class="flex-1 py-4 px-6 rounded-xl font-bold text-white text-base shadow-lg transition flex items-center justify-center space-x-2 ${
+                                hasStock ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-300 cursor-not-allowed'
+                            }">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                            <span>${hasStock ? 'Add to Cart' : 'Out of Stock'}</span>
+                        </button>
+                        <a href="products.html" class="px-6 py-4 rounded-xl border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-center transition">
+                            Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function switchImage(src) {
+            const img = document.getElementById('main-product-img');
+            if (img) img.src = src;
+        }
+
+        function selectSize(sizeId, stock, name) {
+            if (stock <= 0) return;
+            selectedSizeId = sizeId;
+            document.querySelectorAll('[id^="size-btn-"]').forEach(btn => {
+                btn.className = 'px-4 py-2 rounded-xl text-sm font-bold border transition bg-white text-gray-800 border-gray-300 hover:border-purple-600';
+            });
+            const activeBtn = document.getElementById(`size-btn-${sizeId}`);
+            if (activeBtn) {
+                activeBtn.className = 'px-4 py-2 rounded-xl text-sm font-bold border transition bg-purple-600 text-white border-purple-600 shadow';
+            }
+            const label = document.getElementById('selected-size-label');
+            if (label) label.textContent = `Selected: ${name}`;
+        }
+
+        function adjustQty(delta) {
+            currentQuantity = Math.max(1, currentQuantity + delta);
+            document.getElementById('qty-display').textContent = currentQuantity;
+        }
+
+        async function handleAddToCart() {
+            if (!currentProduct) return;
+            if (!Auth.isLoggedIn()) {
+                openAuthModal('login');
+                return;
+            }
+
+            const btn = document.getElementById('add-to-cart-btn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span>Adding...</span>';
+
+            try {
+                const res = await CartAPI.addToCart(currentProduct.id, selectedSizeId, currentQuantity);
+                if (res.success) {
+                    showToast('Added to cart successfully!', 'success');
+                } else {
+                    showToast(res.message || 'Failed to add to cart', 'error');
+                }
+            } catch (e) {
+                showToast('Network error adding to cart', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProductDetails);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - Textile Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5CF6',
+                        secondary: '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Navbar Container -->
+    <div id="navbar-container"></div>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1 w-full text-center">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sm:p-12">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-2">Thank You for Your Order!</h1>
+            <p class="text-gray-500 mb-6">Your order has been placed successfully and is now being processed.</p>
+
+            <div class="bg-gray-50 rounded-2xl p-6 text-left max-w-md mx-auto mb-8 border border-gray-100 space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">Order Number:</span>
+                    <span id="order-id" class="font-mono font-bold text-purple-600">ORD-TEXTILE-HAVEN</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">Items Ordered:</span>
+                    <span id="order-items" class="font-semibold text-gray-800">1</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">Total Paid:</span>
+                    <span id="order-total" class="font-black text-lg text-gray-900">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">Delivery Status:</span>
+                    <span class="text-xs font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Processing</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="products.html" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3.5 rounded-xl transition shadow">
+                    Continue Shopping
+                </a>
+                <a href="index.html" class="border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold px-8 py-3.5 rounded-xl transition">
+                    Return to Home
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Container -->
+    <div id="footer-container" class="mt-auto"></div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const raw = sessionStorage.getItem('th_last_order');
+            if (raw) {
+                try {
+                    const data = JSON.parse(raw);
+                    if (data.orderId) document.getElementById('order-id').textContent = data.orderId;
+                    if (data.itemCount) document.getElementById('order-items').textContent = data.itemCount;
+                    if (data.totalAmount) document.getElementById('order-total').textContent = ProductAPI.formatPrice(data.totalAmount);
+                } catch (e) {}
+            }
+        });
+    </script>
+</body>
+</html>

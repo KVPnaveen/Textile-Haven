@@ -88,6 +88,20 @@ const ProductAPI = {
         // Return relative path so it loads from frontend/assets/images/...
         return relativePath;
     },
+    handleImageError(img) {
+        if (!img) return;
+        if (!img.dataset.fallback) {
+            img.dataset.fallback = '1';
+            const currentSrc = img.getAttribute('src') || '';
+            const clean = currentSrc.replace(/^\/+/, '');
+            if (!window.location.origin.includes(':8080') && !currentSrc.startsWith('http')) {
+                img.src = 'http://localhost:8080/' + clean;
+                return;
+            }
+        }
+        img.onerror = null;
+        img.src = 'assets/textile-haven-LOGO.png';
+    },
     formatPrice(price) {
         const num = parseFloat(price) || 0;
         return '$' + num.toFixed(2);
@@ -554,6 +568,11 @@ function escapeHtml(text) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
+
+function handleImageError(img) {
+    ProductAPI.handleImageError(img);
+}
+window.handleImageError = handleImageError;
 
 document.addEventListener('DOMContentLoaded', () => {
     renderNavbar();

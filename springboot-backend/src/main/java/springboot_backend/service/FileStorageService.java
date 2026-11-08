@@ -46,6 +46,26 @@ public class FileStorageService {
         try {
             Path targetLocation = this.uploadLocation.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            // Also copy to frontend assets and static resources if they exist
+            try {
+                Path frontendPath = Paths.get("../frontend/assets/images").toAbsolutePath().resolve(uniqueFilename);
+                Files.createDirectories(frontendPath.getParent());
+                Files.copy(targetLocation, frontendPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception ignored) {}
+
+            try {
+                Path staticPath = Paths.get("src/main/resources/static/assets/images").toAbsolutePath().resolve(uniqueFilename);
+                Files.createDirectories(staticPath.getParent());
+                Files.copy(targetLocation, staticPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception ignored) {}
+
+            try {
+                Path targetStaticPath = Paths.get("target/classes/static/assets/images").toAbsolutePath().resolve(uniqueFilename);
+                Files.createDirectories(targetStaticPath.getParent());
+                Files.copy(targetLocation, targetStaticPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (Exception ignored) {}
+
             return "assets/images/" + uniqueFilename;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file " + uniqueFilename, e);

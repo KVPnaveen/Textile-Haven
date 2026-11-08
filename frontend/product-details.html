@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - Textile Haven</title>
+    <link rel="icon" type="image/png" href="assets/textile-haven-LOGO.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -103,15 +104,15 @@
                     <div class="relative aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden shadow-inner border">
                         <img id="main-product-img" src="${mainImg}" alt="${escapeHtml(product.name)}"
                              class="w-full h-full object-cover transition-opacity duration-300"
-                             onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='http://localhost:8080/'+(this.getAttribute('src')||'').replace(/^\/+/,'');}else{this.src='assets/textile-haven-LOGO.png';}">
+                             onerror="handleImageError(this)">
                     </div>
                     ${secondaryImg ? `
                         <div class="flex gap-3 mt-4">
                             <button onclick="switchImage('${mainImg}')" class="w-20 h-24 rounded-lg overflow-hidden border-2 border-purple-600 focus:outline-none">
-                                <img src="${mainImg}" class="w-full h-full object-cover">
+                                <img src="${mainImg}" class="w-full h-full object-cover" onerror="handleImageError(this)">
                             </button>
                             <button onclick="switchImage('${secondaryImg}')" class="w-20 h-24 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-purple-600 focus:outline-none">
-                                <img src="${secondaryImg}" class="w-full h-full object-cover">
+                                <img src="${secondaryImg}" class="w-full h-full object-cover" onerror="handleImageError(this)">
                             </button>
                         </div>
                     ` : ''}

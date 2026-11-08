@@ -109,8 +109,12 @@ const ProductAPI = {
         return await res.json();
     },
     async getById(id) {
-        const res = await fetch(`${API_CONFIG.baseUrl}/products/${id}`);
-        return await res.json();
+        try {
+            const res = await fetch(`${API_CONFIG.baseUrl}/products/${id}`);
+            return await res.json();
+        } catch (e) {
+            return { success: false, message: 'Connection temporarily interrupted. Please retry.' };
+        }
     },
     async create(formData) {
         const user = Auth.getUser();
@@ -164,10 +168,14 @@ const CartAPI = {
     async getCart() {
         const user = Auth.getUser();
         if (!user) return { success: false, data: { items: [], count: 0, total: 0 } };
-        const res = await fetch(`${API_CONFIG.baseUrl}/cart`, {
-            headers: Auth.getHeaders()
-        });
-        return await res.json();
+        try {
+            const res = await fetch(`${API_CONFIG.baseUrl}/cart`, {
+                headers: Auth.getHeaders()
+            });
+            return await res.json();
+        } catch (e) {
+            return { success: false, data: { items: [], count: 0, total: 0 } };
+        }
     },
     async addToCart(productId, sizeId, quantity = 1) {
         const user = Auth.getUser();
@@ -256,15 +264,22 @@ async function updateCartBadge() {
 
 const RecentlyViewed = {
     KEY: 'th_recently_viewed',
+    getKey() {
+        const user = Auth.getUser();
+        return (user && user.id) ? `th_recently_viewed_user_${user.id}` : 'th_recently_viewed_guest';
+    },
     get() {
         try {
-            return JSON.parse(localStorage.getItem(this.KEY) || '[]');
+            const key = this.getKey();
+            const stored = localStorage.getItem(key) || localStorage.getItem(this.KEY);
+            return stored ? JSON.parse(stored) : [];
         } catch (e) {
             return [];
         }
     },
     add(product) {
         if (!product || !product.id) return;
+        const key = this.getKey();
         let list = this.get().filter(p => p.id !== product.id);
         list.unshift({
             id: product.id,
@@ -274,7 +289,7 @@ const RecentlyViewed = {
             hasStock: product.hasStock
         });
         if (list.length > 8) list = list.slice(0, 8);
-        localStorage.setItem(this.KEY, JSON.stringify(list));
+        localStorage.setItem(key, JSON.stringify(list));
     }
 };
 

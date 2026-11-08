@@ -76,30 +76,23 @@ const ProductAPI = {
         if (!imagePath) return 'assets/textile-haven-LOGO.png';
         if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
 
-        // Remove leading slash to ensure relative path works from current page
-        const relativePath = imagePath.replace(/^\/+/, '');
+        // Clean any leading slashes
+        const cleanPath = imagePath.replace(/^\/+/, '');
 
-        // If running directly on Spring Boot server (port 8080)
-        if (window.location.origin.includes(':8080')) {
-            return '/' + relativePath;
+        // If it's a local static asset (like the logo), keep it relative
+        if (cleanPath.startsWith('assets/textile-haven-LOGO')) {
+            return cleanPath;
         }
 
-        // When running on Apache, Live Server, or file system:
-        // Return relative path so it loads from frontend/assets/images/...
-        return relativePath;
+        // Always point to Spring Boot backend (port 8080) for product images when served from Apache/external
+        if (window.location.origin.includes(':8080')) {
+            return '/' + cleanPath;
+        }
+        return 'http://localhost:8080/' + cleanPath;
     },
     handleImageError(img) {
         if (!img) return;
-        if (!img.dataset.fallback) {
-            img.dataset.fallback = '1';
-            const currentSrc = img.getAttribute('src') || '';
-            const clean = currentSrc.replace(/^\/+/, '');
-            if (!window.location.origin.includes(':8080') && !currentSrc.startsWith('http')) {
-                img.src = 'http://localhost:8080/' + clean;
-                return;
-            }
-        }
-        img.onerror = null;
+        img.onerror = null; // Prevent any recursion
         img.src = 'assets/textile-haven-LOGO.png';
     },
     formatPrice(price) {

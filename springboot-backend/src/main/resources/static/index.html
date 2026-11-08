@@ -42,195 +42,104 @@
 
     <!-- Floating Section Quick-Jump Indicator (Desktop) -->
     <aside aria-label="Page Sections" class="hidden xl:flex fixed right-5 top-1/2 -translate-y-1/2 z-40 flex-col gap-3 bg-white/85 backdrop-blur-md p-2 rounded-full shadow-lg border border-gray-200">
-        <a href="#section-initial" title="Home: Stories & FAQ" class="section-dot w-3 h-3 rounded-full bg-purple-600 transition hover:scale-125" aria-label="Home section"></a>
-        <a href="#section-handpicked" title="Featured: Handpicked Styles" class="section-dot w-3 h-3 rounded-full bg-gray-300 hover:bg-purple-500 transition hover:scale-125" aria-label="Handpicked for You"></a>
-        <a href="#section-trending" title="Featured: Trending Now" class="section-dot w-3 h-3 rounded-full bg-gray-300 hover:bg-purple-500 transition hover:scale-125" aria-label="Trending Now"></a>
-        <a href="#section-footer" title="Footer & Links" class="section-dot w-3 h-3 rounded-full bg-gray-300 hover:bg-purple-500 transition hover:scale-125" aria-label="Footer"></a>
+        <a href="#section-hero" title="Home & Value Propositions" class="section-dot w-3 h-3 rounded-full bg-purple-600 transition hover:scale-125" aria-label="Hero section"></a>
+        <a href="#section-handpicked" title="Featured Products: Handpicked" class="section-dot w-3 h-3 rounded-full bg-gray-300 hover:bg-purple-500 transition hover:scale-125" aria-label="Handpicked for You"></a>
+        <a href="#section-trending" title="Featured Products: Trending Now" class="section-dot w-3 h-3 rounded-full bg-gray-300 hover:bg-purple-500 transition hover:scale-125" aria-label="Trending Now"></a>
+        <a href="#section-stories" title="Customer Stories & FAQ" class="section-dot w-3 h-3 rounded-full bg-gray-300 hover:bg-purple-500 transition hover:scale-125" aria-label="Customer Stories"></a>
     </aside>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 1 (INITIAL VIEWPORT): COMPACT HERO + STORIES & FAQ SIDE-BY-SIDE   -->
-    <!-- Requirement: Both 'Customer Stories' and 'Got Questions?' visible in 1st  -->
-    <!-- screen without scrolling down. Balanced 2-column layout on desktop.       -->
+    <!-- SECTION 1 (INITIAL VIEW): FULL ORIGINAL IMG06.JPG HERO + 4 VALUE PROPOSITIONS-->
+    <!-- Pure original image without color tint overlays. Full image displayed.       -->
     <!-- ========================================================================= -->
-    <section id="section-initial" class="snap-section min-h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)] flex flex-col justify-between bg-white border-b border-gray-200 overflow-hidden">
-        
-        <!-- 1. Compact Hero Header + 4 Core Value Propositions Strip -->
-        <div class="bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 text-white px-4 sm:px-6 py-3 sm:py-3.5 shadow-xs shrink-0">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5">
-                <div class="text-center md:text-left">
-                    <div class="flex items-center justify-center md:justify-start gap-2">
-                        <span class="bg-white/20 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/30">Summer 2026 Collection</span>
-                        <span class="text-purple-200 text-xs hidden sm:inline font-medium">Curated Women's Fashion</span>
+    <section id="section-hero" class="snap-section relative bg-white border-b border-gray-200">
+        <!-- Full Image Container (1376x768 Aspect Ratio, Full image visible without cropping) -->
+        <div class="relative w-full aspect-[16/9] sm:aspect-[1376/768] max-h-[85vh] overflow-hidden bg-gray-100 flex items-center">
+            <!-- 100% Pure Original Image: No color overlay, full natural colors -->
+            <img src="assets/images/products/img06.jpg" 
+                 alt="Textile Haven - Discover Your Signature Style" 
+                 class="w-full h-full object-contain sm:object-cover object-center"
+                 onerror="this.src='assets/images/img06.jpg'">
+
+            <!-- Elegant Left-Aligned Content Card over Garden Patio (Zero color tint over the model) -->
+            <div class="absolute inset-0 flex items-center">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                    <div class="max-w-md sm:max-w-lg bg-white/85 sm:bg-white/90 backdrop-blur-md p-5 sm:p-7 md:p-8 rounded-2xl sm:rounded-3xl shadow-xl border border-white/80 my-auto">
+                        <span class="inline-block bg-purple-100 text-purple-800 text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full mb-2.5">
+                            New Summer Arrivals 2026
+                        </span>
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-2.5">
+                            Discover Your Signature Style
+                        </h1>
+                        <p class="text-xs sm:text-sm md:text-base text-gray-600 font-normal mb-5 leading-relaxed">
+                            Curated women's fashion crafted with premium breathable fabrics, flattering fits, and timeless elegance.
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <!-- Fitts's Law: Prominent CTA directly navigating to Handpicked for You with 1 click/scroll -->
+                            <a href="#section-handpicked" class="bg-purple-600 hover:bg-purple-700 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-black text-xs sm:text-sm shadow-md hover:shadow-lg transition transform active:scale-95 flex items-center gap-1.5">
+                                <span>Explore Featured</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            </a>
+                            <a href="products.html" class="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-2xs hover:shadow transition">
+                                Shop Full Collection
+                            </a>
+                        </div>
                     </div>
-                    <h1 class="text-lg sm:text-xl md:text-2xl font-black tracking-tight mt-0.5">
-                        Discover Your Signature Style
-                    </h1>
-                </div>
-                
-                <!-- 4 Value Propositions: Visible in Initial Screen -->
-                <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
-                    <span class="bg-white/15 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-white/20 font-semibold flex items-center gap-1">
-                        <span class="text-emerald-300">✓</span> Premium Fabric Quality
-                    </span>
-                    <span class="bg-white/15 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-white/20 font-semibold flex items-center gap-1">
-                        <span>🚚</span> Free Delivery ($75+)
-                    </span>
-                    <span class="bg-white/15 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-white/20 font-semibold flex items-center gap-1">
-                        <span>🔄</span> 30-Day Easy Returns
-                    </span>
-                    <span class="bg-white/15 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-white/20 font-semibold flex items-center gap-1">
-                        <span>🔒</span> Secure Checkout
-                    </span>
-                    <a href="#section-handpicked" class="bg-white text-purple-800 hover:bg-purple-50 text-xs font-black px-3 py-1 rounded-lg shadow-sm transition flex items-center gap-1 ml-1 active:scale-95">
-                        <span>Explore Featured</span>
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- 2. Balanced Two-Column Layout: Customer Stories (Left) & Got Questions? (Right) -->
-        <div class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 w-full flex flex-col justify-center overflow-y-auto lg:overflow-hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-stretch">
-                
-                <!-- LEFT COLUMN: CUSTOMER STORIES -->
-                <div class="bg-gray-50/90 rounded-2xl p-3.5 sm:p-4 border border-gray-200 flex flex-col justify-between shadow-2xs">
-                    <div>
-                        <!-- Header -->
-                        <div class="flex items-center justify-between mb-2.5 border-b border-gray-200/80 pb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-6 h-6 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center font-bold text-xs">💬</span>
-                                <div>
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-purple-700 block">Verified Social Proof</span>
-                                    <h2 class="text-sm sm:text-base font-black text-gray-900 leading-tight">Customer Stories</h2>
-                                </div>
-                            </div>
-                            <span class="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                                ★ 4.9 Rating (480+ Reviews)
-                            </span>
+        <!-- 4 Value Propositions: Visible in Initial View -->
+        <div class="py-5 sm:py-6 bg-white border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 text-center">
+                    <!-- 1. Premium Fabric Quality -->
+                    <div class="p-3 bg-gray-50/80 rounded-2xl border border-gray-100 shadow-2xs">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         </div>
+                        <h4 class="font-black text-xs sm:text-sm text-gray-900 mb-0.5">Premium Fabric Quality</h4>
+                        <p class="text-gray-500 text-[11px] sm:text-xs">Finest cotton & silk blends</p>
+                    </div>
 
-                        <!-- 3 Customer Reviews -->
-                        <div class="space-y-2">
-                            <!-- Review 1 -->
-                            <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-gray-100 shadow-2xs">
-                                <div class="flex items-center justify-between text-xs mb-0.5">
-                                    <span class="font-bold text-gray-900 text-xs">Sarah Jenkins <span class="text-[9px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded ml-1">✓ Verified</span></span>
-                                    <span class="text-amber-400 text-xs">★★★★★</span>
-                                </div>
-                                <p class="text-gray-600 text-xs italic leading-relaxed">
-                                    "The Floral Summer Midi Dress fits like a dream! The fabric is so breathable and light. Fast delivery too."
-                                </p>
-                                <span class="text-[10px] text-purple-600 font-semibold block mt-0.5">Floral Summer Midi Dress</span>
-                            </div>
-
-                            <!-- Review 2 -->
-                            <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-gray-100 shadow-2xs">
-                                <div class="flex items-center justify-between text-xs mb-0.5">
-                                    <span class="font-bold text-gray-900 text-xs">Elena Rostova <span class="text-[9px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded ml-1">✓ Verified</span></span>
-                                    <span class="text-amber-400 text-xs">★★★★★</span>
-                                </div>
-                                <p class="text-gray-600 text-xs italic leading-relaxed">
-                                    "Incredible linen quality on the Classic Linen Wrap Dress. Looks high-end at half the boutique price!"
-                                </p>
-                                <span class="text-[10px] text-purple-600 font-semibold block mt-0.5">Classic Linen Wrap Dress</span>
-                            </div>
-
-                            <!-- Review 3 -->
-                            <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-gray-100 shadow-2xs">
-                                <div class="flex items-center justify-between text-xs mb-0.5">
-                                    <span class="font-bold text-gray-900 text-xs">Maya Patel <span class="text-[9px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded ml-1">✓ Verified</span></span>
-                                    <span class="text-amber-400 text-xs">★★★★★</span>
-                                </div>
-                                <p class="text-gray-600 text-xs italic leading-relaxed">
-                                    "The Size Guide was super accurate! I ordered Medium and it draped perfectly for my evening event."
-                                </p>
-                                <span class="text-[10px] text-purple-600 font-semibold block mt-0.5">Pastel Evening Cocktail Dress</span>
-                            </div>
+                    <!-- 2. Free Delivery -->
+                    <div class="p-3 bg-gray-50/80 rounded-2xl border border-gray-100 shadow-2xs">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                         </div>
+                        <h4 class="font-black text-xs sm:text-sm text-gray-900 mb-0.5">Free Delivery</h4>
+                        <p class="text-gray-500 text-[11px] sm:text-xs">On all orders over $75</p>
+                    </div>
+
+                    <!-- 3. 30-Day Easy Returns -->
+                    <div class="p-3 bg-gray-50/80 rounded-2xl border border-gray-100 shadow-2xs">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        </div>
+                        <h4 class="font-black text-xs sm:text-sm text-gray-900 mb-0.5">30-Day Easy Returns</h4>
+                        <p class="text-gray-500 text-[11px] sm:text-xs">Hassle-free exchange policy</p>
+                    </div>
+
+                    <!-- 4. Secure Checkout -->
+                    <div class="p-3 bg-gray-50/80 rounded-2xl border border-gray-100 shadow-2xs">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <h4 class="font-black text-xs sm:text-sm text-gray-900 mb-0.5">Secure Checkout</h4>
+                        <p class="text-gray-500 text-[11px] sm:text-xs">256-bit encrypted payments</p>
                     </div>
                 </div>
-
-                <!-- RIGHT COLUMN: GOT QUESTIONS? (FAQ ACCORDION) -->
-                <div class="bg-gray-50/90 rounded-2xl p-3.5 sm:p-4 border border-gray-200 flex flex-col justify-between shadow-2xs">
-                    <div>
-                        <!-- Header -->
-                        <div class="flex items-center justify-between mb-2.5 border-b border-gray-200/80 pb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="w-6 h-6 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center font-bold text-xs">❓</span>
-                                <div>
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-purple-700 block">Instant Support</span>
-                                    <h2 class="text-sm sm:text-base font-black text-gray-900 leading-tight">Got Questions?</h2>
-                                </div>
-                            </div>
-                            <span class="text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-                                FAQs
-                            </span>
-                        </div>
-
-                        <!-- 3 FAQ Accordion Items -->
-                        <div class="space-y-2">
-                            <details class="group bg-white p-2.5 sm:p-3 rounded-xl border border-gray-200/80 cursor-pointer shadow-2xs transition" open>
-                                <summary class="flex justify-between items-center font-bold text-xs sm:text-sm text-gray-900 focus:outline-none select-none">
-                                    <span class="flex items-center gap-1.5">
-                                        <span class="text-purple-600 font-extrabold text-xs">Q1.</span>
-                                        <span>How do I determine the right size for me?</span>
-                                    </span>
-                                    <span class="text-purple-600 text-xs transform group-open:rotate-180 transition">▼</span>
-                                </summary>
-                                <p class="text-gray-600 text-xs mt-1.5 pl-4 leading-relaxed border-t border-gray-100 pt-1.5">
-                                    Every product has an interactive "Size Guide" displaying standard bust, waist, and hip measurements in both inches and centimeters. If between sizes, we recommend sizing up.
-                                </p>
-                            </details>
-
-                            <details class="group bg-white p-2.5 sm:p-3 rounded-xl border border-gray-200/80 cursor-pointer shadow-2xs transition">
-                                <summary class="flex justify-between items-center font-bold text-xs sm:text-sm text-gray-900 focus:outline-none select-none">
-                                    <span class="flex items-center gap-1.5">
-                                        <span class="text-purple-600 font-extrabold text-xs">Q2.</span>
-                                        <span>What are shipping delivery times and costs?</span>
-                                    </span>
-                                    <span class="text-purple-600 text-xs transform group-open:rotate-180 transition">▼</span>
-                                </summary>
-                                <p class="text-gray-600 text-xs mt-1.5 pl-4 leading-relaxed border-t border-gray-100 pt-1.5">
-                                    Standard delivery takes 3 to 5 business days nationwide. All orders totaling $75 or more qualify for FREE delivery automatically at checkout.
-                                </p>
-                            </details>
-
-                            <details class="group bg-white p-2.5 sm:p-3 rounded-xl border border-gray-200/80 cursor-pointer shadow-2xs transition">
-                                <summary class="flex justify-between items-center font-bold text-xs sm:text-sm text-gray-900 focus:outline-none select-none">
-                                    <span class="flex items-center gap-1.5">
-                                        <span class="text-purple-600 font-extrabold text-xs">Q3.</span>
-                                        <span>What is your return and exchange policy?</span>
-                                    </span>
-                                    <span class="text-purple-600 text-xs transform group-open:rotate-180 transition">▼</span>
-                                </summary>
-                                <p class="text-gray-600 text-xs mt-1.5 pl-4 leading-relaxed border-t border-gray-100 pt-1.5">
-                                    We offer a 30-day hassle-free return and exchange window. Simply contact our support team and return items unworn with original tags attached for a full refund or exchange.
-                                </p>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-        </div>
-
-        <!-- 3. Bottom Viewport Hint Bar -->
-        <div class="bg-gray-100/90 border-t border-gray-200 py-1.5 text-center shrink-0">
-            <a href="#section-handpicked" class="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 hover:text-purple-900 transition">
-                <span>Scroll Down for Featured Handpicked Products (Live Stock & Available Sizes)</span>
-                <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            </a>
         </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 2: HANDPICKED FOR YOU - COMPACT 4:5 PRODUCT CARDS                 -->
+    <!-- SECTION 2 (FIRST SCROLL): HANDPICKED FOR YOU - COMPACT 4:5 PRODUCT CARDS  -->
+    <!-- HCI Principles: Visibility, Recognition, Compact 4:5 images, Complete Info -->
     <!-- ========================================================================= -->
     <section id="section-handpicked" class="snap-section min-h-[calc(100vh-4rem)] py-6 sm:py-8 flex flex-col justify-center bg-gray-50 border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <!-- Section Header -->
+            <!-- Compact Section Header -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 sm:mb-5 gap-2">
                 <div>
                     <span class="text-purple-700 text-xs font-black uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">
@@ -257,11 +166,11 @@
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 3: TRENDING NOW - COMPACT 4:5 PRODUCT CARDS                       -->
+    <!-- SECTION 3 (NEXT SCROLL): TRENDING NOW - COMPACT 4:5 PRODUCT CARDS         -->
     <!-- ========================================================================= -->
     <section id="section-trending" class="snap-section min-h-[calc(100vh-4rem)] py-6 sm:py-8 flex flex-col justify-center bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <!-- Section Header -->
+            <!-- Compact Section Header -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 sm:mb-5 gap-2">
                 <div>
                     <span class="text-pink-700 text-xs font-black uppercase tracking-widest bg-pink-100 px-3 py-1 rounded-full">
@@ -271,8 +180,8 @@
                     <p class="text-gray-500 text-xs sm:text-sm">Explore our second curated collection with live sizes, discounts, and ratings</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="#section-footer" class="text-xs font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-xl transition flex items-center gap-1 border border-purple-200">
-                        <span>Footer & Links &darr;</span>
+                    <a href="#section-stories" class="text-xs font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-xl transition flex items-center gap-1 border border-purple-200">
+                        <span>Customer Stories &darr;</span>
                     </a>
                 </div>
             </div>
@@ -288,11 +197,118 @@
     </section>
 
     <!-- ========================================================================= -->
-    <!-- SECTION 4: FOOTER SECTION                                                 -->
+    <!-- SECTION 4 (NEXT SCROLL): CUSTOMER STORIES TO FOOTER                       -->
     <!-- ========================================================================= -->
-    <footer id="section-footer" class="snap-section bg-gray-900 text-white border-t border-gray-800">
-        <div id="footer-container"></div>
-    </footer>
+    <div id="section-stories" class="snap-section min-h-[calc(100vh-4rem)] flex flex-col justify-between">
+        <!-- Customer Stories -->
+        <section class="py-12 sm:py-16 bg-gray-100/70 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-xl mx-auto mb-10">
+                    <span class="text-purple-600 text-xs font-black uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">Customer Stories</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-2">Loved by Women Nationwide</h2>
+                    <p class="text-gray-500 text-xs sm:text-sm mt-1">Real reviews on our fabric comfort, authentic fit, and fast delivery.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Review 1 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex text-amber-400 text-sm mb-3">★★★★★</div>
+                            <p class="text-gray-700 text-sm italic leading-relaxed">
+                                "The Floral Summer Midi Dress fits like a dream! The fabric is so breathable and light. Fast delivery too."
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-xs text-gray-900">Sarah Jenkins</div>
+                                <div class="text-[11px] text-gray-400">Verified Buyer</div>
+                            </div>
+                            <span class="text-xs text-purple-600 font-medium">Floral Midi</span>
+                        </div>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex text-amber-400 text-sm mb-3">★★★★★</div>
+                            <p class="text-gray-700 text-sm italic leading-relaxed">
+                                "Incredible linen quality on the Classic Linen Wrap Dress. Looks high-end at half the boutique price!"
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-xs text-gray-900">Elena Rostova</div>
+                                <div class="text-[11px] text-gray-400">Verified Buyer</div>
+                            </div>
+                            <span class="text-xs text-purple-600 font-medium">Linen Wrap</span>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <div class="flex text-amber-400 text-sm mb-3">★★★★★</div>
+                            <p class="text-gray-700 text-sm italic leading-relaxed">
+                                "The Size Guide was super accurate! I ordered Medium and it draped perfectly for my evening event."
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-xs text-gray-900">Maya Patel</div>
+                                <div class="text-[11px] text-gray-400">Verified Buyer</div>
+                            </div>
+                            <span class="text-xs text-purple-600 font-medium">Evening Cocktail</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Accordion -->
+        <section class="py-12 bg-white border-b border-gray-200">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-6">
+                    <span class="text-purple-600 text-xs font-black uppercase tracking-widest bg-purple-100 px-3 py-1 rounded-full">Got Questions?</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-gray-900 mt-1.5">Frequently Asked Questions</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <details class="group bg-gray-50 p-4 rounded-2xl border border-gray-200 cursor-pointer">
+                        <summary class="flex justify-between items-center font-bold text-sm text-gray-900 focus:outline-none">
+                            <span>How do I determine the right size for me?</span>
+                            <span class="text-purple-600 transform group-open:rotate-180 transition">▼</span>
+                        </summary>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-2.5 leading-relaxed">
+                            Every product detail page has an interactive "Size Guide" button displaying standard bust, waist, and hip measurements in both inches and centimeters. If you are between sizes, we recommend sizing up.
+                        </p>
+                    </details>
+
+                    <details class="group bg-gray-50 p-4 rounded-2xl border border-gray-200 cursor-pointer">
+                        <summary class="flex justify-between items-center font-bold text-sm text-gray-900 focus:outline-none">
+                            <span>What are the shipping delivery times and costs?</span>
+                            <span class="text-purple-600 transform group-open:rotate-180 transition">▼</span>
+                        </summary>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-2.5 leading-relaxed">
+                            Standard delivery takes 3 to 5 business days nationwide. All orders totaling $75 or more qualify for FREE delivery automatically at checkout.
+                        </p>
+                    </details>
+
+                    <details class="group bg-gray-50 p-4 rounded-2xl border border-gray-200 cursor-pointer">
+                        <summary class="flex justify-between items-center font-bold text-sm text-gray-900 focus:outline-none">
+                            <span>What is your return and exchange policy?</span>
+                            <span class="text-purple-600 transform group-open:rotate-180 transition">▼</span>
+                        </summary>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-2.5 leading-relaxed">
+                            We offer a 30-day hassle-free return and exchange window. Simply contact our support team and return items unworn with original tags attached for a full refund or exchange.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Container -->
+        <div id="footer-container" class="mt-auto"></div>
+    </div>
 
     <script src="js/api.js?v=2.2"></script>
     <script>
@@ -364,7 +380,7 @@
         }
 
         // =========================================================================
-        // COMPACT PRODUCT CARD (HCI PRINCIPLES + 4:5 ASPECT RATIO + ALL DETAILS)
+        // REDESIGNED PRODUCT CARD (HCI PRINCIPLES + 4:5 ASPECT RATIO + ALL DETAILS)
         // =========================================================================
         const renderCompactProductCard = (product, sectionPrefix) => {
             const mainImg = ProductAPI.formatImageUrl(product.mainImage);
@@ -533,7 +549,7 @@
 
         // Active Section Indicator Observer
         function setupSectionObserver() {
-            const sections = document.querySelectorAll('section[id], footer[id]');
+            const sections = document.querySelectorAll('section[id], div[id="section-stories"]');
             const dots = document.querySelectorAll('.section-dot');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {

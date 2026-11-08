@@ -299,7 +299,8 @@ function renderNavbar() {
         Skip to main content
     </a>
 
-    <nav class="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-40 transition">
+    <!-- Permanent Fixed Navbar (Stays locked at top permanently on scroll) -->
+    <nav class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow-md border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Brand Logo & Name -->
@@ -348,7 +349,7 @@ function renderNavbar() {
         </div>
 
         <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden md:hidden px-4 pt-3 pb-5 space-y-2 border-t bg-white">
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-3 pb-5 space-y-2 border-t bg-white shadow-lg">
             <a href="index.html" class="block ${isHome ? 'text-purple-600 font-bold bg-purple-50' : 'text-gray-700'} px-3 py-2 rounded-lg font-medium">Home</a>
             <a href="products.html" class="block ${isShop ? 'text-purple-600 font-bold bg-purple-50' : 'text-gray-700'} px-3 py-2 rounded-lg font-medium">Shop</a>
             <a href="cart.html" class="block ${isCart ? 'text-purple-600 font-bold bg-purple-50' : 'text-gray-700'} px-3 py-2 rounded-lg font-medium flex items-center justify-between">
@@ -366,6 +367,8 @@ function renderNavbar() {
             `}
         </div>
     </nav>
+    <!-- Spacer so page content starts cleanly below the fixed navbar -->
+    <div class="h-16 w-full" aria-hidden="true"></div>
     `;
 
     document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {

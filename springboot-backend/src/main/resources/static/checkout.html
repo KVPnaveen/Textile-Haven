@@ -27,8 +27,34 @@
     <div id="navbar-container"></div>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
-        <h1 class="text-3xl font-extrabold text-gray-900 mb-8">Complete Your Order</h1>
+    <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <!-- Multi-Step Progress Indicator (HCI Heuristic #1: Visibility of System Status) -->
+        <div class="max-w-2xl mx-auto mb-8">
+            <div class="flex items-center justify-between text-xs sm:text-sm font-bold">
+                <!-- Step 1 -->
+                <a href="cart.html" class="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700 transition">
+                    <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center font-black">✓</div>
+                    <span>1. Cart</span>
+                </a>
+                <div class="flex-1 h-0.5 bg-emerald-500 mx-3"></div>
+                <!-- Step 2 -->
+                <div class="flex items-center space-x-2 text-purple-600">
+                    <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-black shadow-sm">2</div>
+                    <span>2. Shipping & Payment</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-3"></div>
+                <!-- Step 3 -->
+                <div class="flex items-center space-x-2 text-gray-400">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-black">3</div>
+                    <span>3. Confirmation</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-black text-gray-900">Checkout & Secure Payment</h1>
+            <a href="cart.html" class="text-xs sm:text-sm text-purple-600 hover:underline font-semibold">&larr; Return to Cart</a>
+        </div>
 
         <div id="checkout-content" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Loading Skeleton -->
@@ -131,35 +157,49 @@
                     </form>
                 </div>
 
-                <!-- Order Summary Column -->
+                <!-- Order Summary Column (HCI: Recognition rather than recall) -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-                        <h2 class="text-xl font-bold text-gray-900 border-b pb-3 mb-4">Summary (${cartData.count} items)</h2>
-                        <div class="max-h-72 overflow-y-auto space-y-3 divide-y pr-1">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24 space-y-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+                            <h2 class="text-base font-black text-gray-900">Order Items</h2>
+                            <span class="text-xs font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">${cartData.count} item(s)</span>
+                        </div>
+                        <div class="max-h-72 overflow-y-auto divide-y divide-gray-100 pr-1 space-y-2">
                             ${cartData.items.map(item => `
-                                <div class="pt-3 first:pt-0 flex justify-between items-center text-sm">
-                                    <div class="flex-1 pr-3">
-                                        <div class="font-bold text-gray-800">${escapeHtml(item.productName)}</div>
-                                        <div class="text-xs text-gray-500">Qty: ${item.quantity} ${item.sizeName ? `• Size: ${escapeHtml(item.sizeName)}` : ''}</div>
+                                <div class="pt-2 first:pt-0 flex items-center gap-3">
+                                    <img src="${ProductAPI.formatImageUrl(item.mainImage || item.image1)}" class="w-12 h-14 object-cover rounded-lg bg-gray-100 flex-shrink-0" onerror="handleImageError(this)">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-bold text-xs text-gray-900 truncate">${escapeHtml(item.productName)}</div>
+                                        <div class="text-[11px] text-gray-500 mt-0.5">${item.sizeName ? `Size: ${escapeHtml(item.sizeName)} · ` : ''}Qty: ${item.quantity}</div>
                                     </div>
-                                    <span class="font-bold text-gray-900">${ProductAPI.formatPrice(item.subtotal)}</span>
+                                    <span class="font-black text-xs text-gray-900">${ProductAPI.formatPrice(item.subtotal)}</span>
                                 </div>
                             `).join('')}
                         </div>
 
-                        <div class="border-t mt-4 pt-4 space-y-2 text-sm">
+                        <div class="border-t border-gray-100 pt-3 space-y-2 text-xs sm:text-sm">
                             <div class="flex justify-between text-gray-600">
-                                <span>Subtotal</span>
-                                <span class="font-semibold text-gray-900">${ProductAPI.formatPrice(cartData.total)}</span>
+                                <span>Items Subtotal</span>
+                                <span class="font-bold text-gray-900">${ProductAPI.formatPrice(cartData.total)}</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
-                                <span>Shipping</span>
-                                <span class="font-semibold text-green-600">Free</span>
+                                <span>Standard Delivery</span>
+                                <span class="font-bold text-emerald-600">FREE</span>
                             </div>
-                            <div class="flex justify-between items-center border-t pt-3 text-base">
-                                <span class="font-bold text-gray-900">Total</span>
-                                <span class="font-black text-2xl text-purple-600">${ProductAPI.formatPrice(cartData.total)}</span>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Estimated Tax (0%)</span>
+                                <span class="font-bold text-gray-900">$0.00</span>
                             </div>
+                            <div class="flex justify-between items-center border-t border-gray-100 pt-3 text-base">
+                                <span class="font-black text-gray-900">Total Due</span>
+                                <span class="font-black text-2xl text-purple-700">${ProductAPI.formatPrice(cartData.total)}</span>
+                            </div>
+                        </div>
+
+                        <!-- Trust signals -->
+                        <div class="pt-2 text-[11px] text-gray-400 text-center flex items-center justify-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <span>Encrypted & secure checkout</span>
                         </div>
                     </div>
                 </div>

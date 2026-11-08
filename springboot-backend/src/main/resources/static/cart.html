@@ -77,58 +77,88 @@
                 if (!items || items.length === 0) {
                     container.innerHTML = `
                         <div class="bg-white rounded-2xl p-12 text-center shadow-sm border max-w-xl mx-auto">
-                            <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Cart is Empty</h2>
-                            <p class="text-gray-500 mb-6">Explore our curated collection of women's apparel.</p>
-                            <a href="products.html" class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-xl transition shadow">
-                                Start Shopping
+                            <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Cart is Currently Empty</h2>
+                            <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Looks like you haven't added any elegant pieces yet. Explore our fresh collection!</p>
+                            <a href="products.html" class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-xl transition shadow hover:shadow-md">
+                                Start Shopping Now
                             </a>
                         </div>
                     `;
                     return;
                 }
 
+                // HCI: Visibility of Progress & Motivation
+                const freeShippingThreshold = 75;
+                const shippingDiff = freeShippingThreshold - total;
+                const progressPct = Math.min(100, Math.round((total / freeShippingThreshold) * 100));
+
                 container.innerHTML = `
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Cart Items List -->
                     <div class="lg:col-span-2 space-y-4">
-                        <div class="flex justify-between items-center pb-2">
-                            <span class="text-sm font-semibold text-gray-500 uppercase">${items.length} Item(s) in Cart</span>
-                            <button onclick="handleClearCart()" class="text-xs text-red-500 hover:text-red-700 font-semibold">Clear Cart</button>
+                        <!-- Free Delivery Motivation Bar -->
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                            ${shippingDiff > 0 ? `
+                                <div class="flex justify-between text-xs font-bold text-gray-700 mb-2">
+                                    <span>🚚 Add <strong>${ProductAPI.formatPrice(shippingDiff)}</strong> more to unlock <strong>FREE Delivery</strong>!</span>
+                                    <span class="text-purple-600">${progressPct}%</span>
+                                </div>
+                                <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-purple-600 h-full rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
+                                </div>
+                            ` : `
+                                <div class="flex items-center space-x-2 text-xs font-bold text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+                                    <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Awesome! You've unlocked FREE Nationwide Delivery!</span>
+                                </div>
+                            `}
+                        </div>
+
+                        <div class="flex justify-between items-center px-1 pb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">${items.length} Item(s) in Cart</span>
+                            <button onclick="handleClearCart()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold flex items-center gap-1 hover:underline">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                Clear All
+                            </button>
                         </div>
 
                         ${items.map(item => {
                             const img = ProductAPI.formatImageUrl(item.mainImage || item.image1);
                             return `
-                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-5 transition hover:shadow-md">
-                                <img src="${img}" alt="${escapeHtml(item.productName)}"
-                                     class="w-24 h-28 object-cover rounded-xl bg-gray-100 flex-shrink-0"
-                                     onerror="handleImageError(this)">
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-5 transition hover:shadow-md">
+                                <a href="product-details.html?id=${item.productId}" class="flex-shrink-0">
+                                    <img src="${img}" alt="${escapeHtml(item.productName)}"
+                                         class="w-20 h-24 sm:w-24 sm:h-28 object-cover rounded-xl bg-gray-100"
+                                         onerror="handleImageError(this)">
+                                </a>
                                 <div class="flex-1 w-full">
                                     <div class="flex justify-between items-start">
-                                        <h3 class="font-bold text-gray-900 text-lg hover:text-purple-600">
+                                        <h3 class="font-bold text-gray-900 text-base sm:text-lg hover:text-purple-600 transition">
                                             <a href="product-details.html?id=${item.productId}">${escapeHtml(item.productName)}</a>
                                         </h3>
-                                        <button onclick="handleRemove(${item.id})" class="text-gray-400 hover:text-red-600 p-1">
+                                        <button onclick="handleRemove(${item.id}, ${item.productId}, ${item.sizeId || 'null'}, ${item.quantity}, '${escapeHtml(item.productName)}')" 
+                                            class="text-gray-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition" title="Remove item">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
                                     </div>
-                                    <div class="flex flex-wrap items-center gap-3 mt-1 text-xs">
+                                    <div class="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
                                         ${item.sizeName ? `
                                             <span class="bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded-full">Size: ${escapeHtml(item.sizeName)}</span>
                                         ` : ''}
-                                        <span class="text-gray-500">Unit: ${ProductAPI.formatPrice(item.price)}</span>
+                                        <span class="text-gray-400">|</span>
+                                        <span class="text-gray-500 font-medium">Unit: ${ProductAPI.formatPrice(item.price)}</span>
                                     </div>
 
-                                    <div class="flex justify-between items-center mt-4 pt-3 border-t">
-                                        <div class="flex items-center space-x-2">
-                                            <button onclick="handleUpdateQty(${item.id}, ${item.quantity - 1})" class="w-8 h-8 rounded-lg border font-bold text-gray-600 hover:bg-gray-100 flex items-center justify-center">-</button>
-                                            <span class="w-8 text-center font-bold">${item.quantity}</span>
-                                            <button onclick="handleUpdateQty(${item.id}, ${item.quantity + 1})" class="w-8 h-8 rounded-lg border font-bold text-gray-600 hover:bg-gray-100 flex items-center justify-center">+</button>
+                                    <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
+                                        <div class="flex items-center space-x-1 border border-gray-200 rounded-xl p-0.5 bg-gray-50">
+                                            <button onclick="handleUpdateQty(${item.id}, ${item.quantity - 1})" aria-label="Decrease quantity" class="w-8 h-8 rounded-lg hover:bg-white text-gray-700 font-bold flex items-center justify-center transition shadow-2xs">-</button>
+                                            <span class="w-8 text-center font-bold text-sm text-gray-900">${item.quantity}</span>
+                                            <button onclick="handleUpdateQty(${item.id}, ${item.quantity + 1})" aria-label="Increase quantity" class="w-8 h-8 rounded-lg hover:bg-white text-gray-700 font-bold flex items-center justify-center transition shadow-2xs">+</button>
                                         </div>
-                                        <span class="text-lg font-black text-gray-900">${ProductAPI.formatPrice(item.subtotal)}</span>
+                                        <span class="text-lg font-black text-purple-700">${ProductAPI.formatPrice(item.subtotal)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -136,35 +166,51 @@
                         }).join('')}
                     </div>
 
-                    <!-- Summary Card -->
+                    <!-- Summary Card (HCI: Transparency & Error Prevention) -->
                     <div class="lg:col-span-1">
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-                            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Summary</h2>
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24 space-y-4">
+                            <h2 class="text-lg font-black text-gray-900 pb-3 border-b border-gray-100">Order Summary</h2>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span class="font-semibold text-gray-900">${ProductAPI.formatPrice(total)}</span>
+                                    <span>Items Subtotal</span>
+                                    <span class="font-bold text-gray-900">${ProductAPI.formatPrice(total)}</span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Shipping</span>
-                                    <span class="font-semibold text-green-600">Free</span>
+                                    <span>Standard Delivery</span>
+                                    <span class="font-bold ${shippingDiff <= 0 ? 'text-emerald-600' : 'text-gray-900'}">
+                                        ${shippingDiff <= 0 ? 'FREE' : '$5.99'}
+                                    </span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Taxes</span>
-                                    <span class="font-semibold text-gray-900">$0.00</span>
+                                    <span>Estimated Sales Tax (0%)</span>
+                                    <span class="font-bold text-gray-900">$0.00</span>
                                 </div>
-                                <div class="border-t pt-3 flex justify-between items-center text-base">
-                                    <span class="font-extrabold text-gray-900">Total</span>
-                                    <span class="font-black text-2xl text-purple-600">${ProductAPI.formatPrice(total)}</span>
+                                <div class="border-t border-gray-100 pt-3 flex justify-between items-center text-base">
+                                    <span class="font-black text-gray-900">Estimated Total</span>
+                                    <span class="font-black text-2xl text-purple-700">
+                                        ${ProductAPI.formatPrice(total + (shippingDiff <= 0 ? 0 : 5.99))}
+                                    </span>
                                 </div>
                             </div>
 
-                            <a href="checkout.html" class="mt-6 w-full block text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg">
+                            <a href="checkout.html" class="w-full block text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 px-4 rounded-xl transition shadow-lg hover:shadow-xl active:scale-98">
                                 Proceed to Checkout
                             </a>
 
-                            <div class="mt-4 text-center">
-                                <a href="products.html" class="text-xs text-gray-500 hover:text-purple-600">
+                            <!-- Trust & Security Signals (HCI: Real World Match & Trust) -->
+                            <div class="pt-4 border-t border-gray-100 space-y-2 text-xs text-gray-500">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-emerald-500">🔒</span>
+                                    <span>256-Bit Bank Grade SSL Encrypted Checkout</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-purple-500">🔄</span>
+                                    <span>30-Day Hassle-Free Returns Guarantee</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center pt-2">
+                                <a href="products.html" class="text-xs text-purple-600 hover:text-purple-800 font-semibold hover:underline">
                                     &larr; Or continue shopping
                                 </a>
                             </div>
@@ -191,11 +237,18 @@
             }
         }
 
-        async function handleRemove(cartId) {
+        // HCI Heuristic #3: User Control & Freedom (Undo action)
+        async function handleRemove(cartId, productId, sizeId, quantity, productName) {
             try {
                 const res = await CartAPI.removeFromCart(cartId);
                 if (res.success) {
-                    showToast('Item removed', 'success');
+                    showToast(`"${productName}" removed from cart`, 'info', {
+                        text: 'Undo',
+                        onClick: async () => {
+                            await CartAPI.addToCart(productId, sizeId, quantity);
+                            loadCart();
+                        }
+                    });
                     loadCart();
                 }
             } catch (e) {
@@ -203,8 +256,9 @@
             }
         }
 
+        // HCI Heuristic #5: Error Prevention (Confirmation prompt)
         async function handleClearCart() {
-            if (!confirm('Are you sure you want to empty your cart?')) return;
+            if (!confirm('Are you sure you want to empty your entire cart?')) return;
             try {
                 const res = await CartAPI.clearCart();
                 if (res.success) {

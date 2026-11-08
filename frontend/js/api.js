@@ -254,44 +254,92 @@ async function updateCartBadge() {
     }
 }
 
+const RecentlyViewed = {
+    KEY: 'th_recently_viewed',
+    get() {
+        try {
+            return JSON.parse(localStorage.getItem(this.KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    },
+    add(product) {
+        if (!product || !product.id) return;
+        let list = this.get().filter(p => p.id !== product.id);
+        list.unshift({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            mainImage: product.mainImage,
+            hasStock: product.hasStock
+        });
+        if (list.length > 8) list = list.slice(0, 8);
+        localStorage.setItem(this.KEY, JSON.stringify(list));
+    }
+};
+
 function renderNavbar() {
     const container = document.getElementById('navbar-container');
     if (!container) return;
 
     const user = Auth.getUser();
     const isAdmin = Auth.isAdmin();
+    const path = window.location.pathname.toLowerCase();
+    const isHome = path.endsWith('index.html') || path.endsWith('/') || path.endsWith('frontend') || path.endsWith('frontend/');
+    const isShop = path.includes('products.html') || path.includes('product-details.html');
+    const isCart = path.includes('cart.html') || path.includes('checkout.html');
+    const isAdminPage = path.includes('admin.html');
+
+    const activeCls = 'text-purple-600 font-bold border-b-2 border-purple-600 pb-1';
+    const normalCls = 'text-gray-600 hover:text-purple-600 font-medium transition pb-1';
 
     container.innerHTML = `
-    <nav class="bg-white shadow-lg sticky top-0 z-40">
+    <!-- Skip to content for Accessibility (WCAG 2.1) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:outline-none">
+        Skip to main content
+    </a>
+
+    <!-- Permanent Fixed Navbar (Stays locked at top permanently on scroll) -->
+    <nav class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow-md border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between items-center h-16">
+                <!-- Brand Logo & Name -->
                 <div class="flex items-center">
-                    <a href="index.html" class="flex-shrink-0 flex items-center space-x-2">
-                        <span class="text-2xl font-bold text-purple-600">Textile Haven</span>
+                    <a href="index.html" class="flex-shrink-0 flex items-center space-x-2.5 group" aria-label="Textile Haven Home">
+                        <img src="assets/textile-haven-LOGO.png" alt="Textile Haven Logo" class="w-8 h-8 rounded-full border border-purple-200 group-hover:scale-105 transition" onerror="handleImageError(this)">
+                        <span class="text-2xl font-black bg-gradient-to-r from-purple-700 to-pink-600 bg-clip-text text-transparent">Textile Haven</span>
                     </a>
                 </div>
 
+                <!-- Desktop Navigation Links (Nielsen #1: System Status & Visibility) -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                    <a href="products.html" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">Shop</a>
-                    <a href="cart.html" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium relative">
-                        Cart
-                        <span id="nav-cart-count" class="hidden absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    <a href="index.html" class="${isHome ? activeCls : normalCls}" aria-current="${isHome ? 'page' : 'false'}">Home</a>
+                    <a href="products.html" class="${isShop ? activeCls : normalCls}" aria-current="${isShop ? 'page' : 'false'}">Shop</a>
+                    <a href="cart.html" class="${isCart ? activeCls : normalCls} relative flex items-center gap-1" aria-current="${isCart ? 'page' : 'false'}">
+                        <span>Cart</span>
+                        <span id="nav-cart-count" class="hidden ml-1 bg-rose-500 text-white text-[11px] font-black rounded-full h-5 w-5 flex items-center justify-center shadow-sm" aria-live="polite">0</span>
                     </a>
+
                     ${user ? `
-                        <span class="text-gray-700 px-3 py-2 text-sm font-medium">Welcome, ${escapeHtml(user.username)}</span>
-                        ${isAdmin ? `
-                            <a href="admin.html" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">Admin Panel</a>
-                        ` : ''}
-                        <button onclick="Auth.logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition">Logout</button>
+                        <div class="flex items-center space-x-3 pl-4 border-l border-gray-200">
+                            <span class="text-xs text-gray-500 font-medium">Hi, <strong class="text-gray-800">${escapeHtml(user.username)}</strong></span>
+                            ${isAdmin ? `
+                                <a href="admin.html" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition">Admin</a>
+                            ` : ''}
+                            <button onclick="Auth.logout()" class="text-xs text-red-600 hover:text-red-700 font-semibold px-2 py-1 rounded hover:bg-red-50 transition">Logout</button>
+                        </div>
                     ` : `
-                        <button onclick="openAuthModal('login')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">Login</button>
+                        <div class="pl-4 border-l border-gray-200">
+                            <button onclick="openAuthModal('login')" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-sm transition hover:shadow focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                                Sign In
+                            </button>
+                        </div>
                     `}
                 </div>
 
                 <!-- Mobile menu button -->
                 <div class="md:hidden flex items-center">
-                    <button type="button" id="mobile-menu-btn" class="bg-gray-100 p-2 rounded-md text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <button type="button" id="mobile-menu-btn" aria-label="Toggle navigation menu" class="bg-gray-100 p-2 rounded-lg text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -301,24 +349,26 @@ function renderNavbar() {
         </div>
 
         <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2 border-t">
-            <a href="index.html" class="block text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md font-medium">Home</a>
-            <a href="products.html" class="block text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md font-medium">Shop</a>
-            <a href="cart.html" class="block text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md font-medium relative">
-                Cart
-                <span id="nav-cart-count-mobile" class="hidden ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-3 pb-5 space-y-2 border-t bg-white shadow-lg">
+            <a href="index.html" class="block ${isHome ? 'text-purple-600 font-bold bg-purple-50' : 'text-gray-700'} px-3 py-2 rounded-lg font-medium">Home</a>
+            <a href="products.html" class="block ${isShop ? 'text-purple-600 font-bold bg-purple-50' : 'text-gray-700'} px-3 py-2 rounded-lg font-medium">Shop</a>
+            <a href="cart.html" class="block ${isCart ? 'text-purple-600 font-bold bg-purple-50' : 'text-gray-700'} px-3 py-2 rounded-lg font-medium flex items-center justify-between">
+                <span>Cart</span>
+                <span id="nav-cart-count-mobile" class="hidden bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
             </a>
             ${user ? `
-                <div class="pt-2 border-t text-sm text-gray-600 px-3">Signed in as <strong>${escapeHtml(user.username)}</strong></div>
+                <div class="pt-3 border-t text-sm text-gray-600 px-3">Signed in as <strong>${escapeHtml(user.username)}</strong></div>
                 ${isAdmin ? `
-                    <a href="admin.html" class="block bg-yellow-500 text-white px-3 py-2 rounded-md font-medium">Admin Panel</a>
+                    <a href="admin.html" class="block bg-amber-500 text-white px-3 py-2 rounded-lg font-medium text-center">Admin Panel</a>
                 ` : ''}
-                <button onclick="Auth.logout()" class="w-full text-left bg-red-500 text-white px-3 py-2 rounded-md font-medium">Logout</button>
+                <button onclick="Auth.logout()" class="w-full text-center bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg font-medium">Logout</button>
             ` : `
-                <button onclick="openAuthModal('login')" class="w-full text-left bg-purple-600 text-white px-3 py-2 rounded-md font-medium">Login / Sign Up</button>
+                <button onclick="openAuthModal('login')" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-bold">Sign In / Register</button>
             `}
         </div>
     </nav>
+    <!-- Spacer so page content starts cleanly below the fixed navbar -->
+    <div class="h-16 w-full" aria-hidden="true"></div>
     `;
 
     document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
@@ -537,20 +587,98 @@ function showAuthAlert(msg, type = 'success') {
     alert.classList.remove('hidden');
 }
 
-function showToast(message, type = 'success') {
+function showToast(message, type = 'success', action = null) {
+    let container = document.getElementById('th-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'th-toast-container';
+        container.setAttribute('aria-live', 'polite');
+        container.className = 'fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none';
+        document.body.appendChild(container);
+    }
+
     const toast = document.createElement('div');
-    toast.className = `fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-xl text-white font-medium flex items-center space-x-2 transition-transform transform translate-y-0 ${
-        type === 'success' ? 'bg-green-600' : 'bg-red-600'
-    }`;
+    const colorClasses = type === 'success' 
+        ? 'bg-emerald-600 text-white' 
+        : (type === 'error' ? 'bg-rose-600 text-white' : 'bg-slate-900 text-white');
+
+    const icon = type === 'success'
+        ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'
+        : (type === 'error'
+            ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            : '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>');
+
+    const actionBtnId = 'toast-action-' + Date.now();
+    toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-2xl font-medium flex items-center space-x-3 transition-all duration-300 transform translate-y-3 opacity-0 ${colorClasses}`;
     toast.innerHTML = `
-        <span>${escapeHtml(message)}</span>
+        ${icon}
+        <span class="text-sm font-medium leading-snug">${escapeHtml(message)}</span>
+        ${action ? `<button id="${actionBtnId}" class="ml-3 underline font-bold text-xs uppercase tracking-wider hover:opacity-80 focus:outline-none">${escapeHtml(action.text)}</button>` : ''}
     `;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-        toast.classList.add('opacity-0');
-        setTimeout(() => toast.remove(), 400);
-    }, 2800);
+
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-3', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+    });
+
+    function dismiss() {
+        toast.classList.add('opacity-0', 'translate-y-3');
+        setTimeout(() => toast.remove(), 300);
+    }
+
+    if (action && action.onClick) {
+        toast.querySelector(`#${actionBtnId}`)?.addEventListener('click', () => {
+            action.onClick();
+            dismiss();
+        });
+    }
+
+    setTimeout(dismiss, action ? 5500 : 3200);
 }
+
+function renderBackToTop() {
+    if (document.getElementById('back-to-top-btn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'back-to-top-btn';
+    btn.setAttribute('aria-label', 'Scroll back to top');
+    btn.className = 'fixed bottom-6 left-6 z-40 bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 transform opacity-0 pointer-events-none hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400';
+    btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>`;
+    document.body.appendChild(btn);
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            btn.classList.remove('opacity-0', 'pointer-events-none');
+            btn.classList.add('opacity-100', 'pointer-events-auto');
+        } else {
+            btn.classList.remove('opacity-100', 'pointer-events-auto');
+            btn.classList.add('opacity-0', 'pointer-events-none');
+        }
+    });
+
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+// Global Keyboard Accessibility (Nielsen #7: Efficiency & WCAG 2.1)
+document.addEventListener('keydown', (e) => {
+    // Escape key dismisses modals
+    if (e.key === 'Escape') {
+        closeAuthModal();
+        const sizeModal = document.getElementById('size-guide-modal');
+        if (sizeModal) sizeModal.classList.add('hidden');
+    }
+    // '/' key focuses search bar if not typing in an input
+    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+        }
+    }
+});
 
 function escapeHtml(text) {
     if (!text) return '';
@@ -571,5 +699,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderNavbar();
     renderFooter();
     renderAuthModal();
+    renderBackToTop();
 });
 

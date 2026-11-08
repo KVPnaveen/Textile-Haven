@@ -27,14 +27,14 @@
     <div id="navbar-container"></div>
 
     <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
-        <!-- Breadcrumb -->
-        <nav class="flex mb-6 text-sm text-gray-500">
-            <a href="index.html" class="hover:text-purple-600">Home</a>
-            <span class="mx-2">/</span>
-            <a href="products.html" class="hover:text-purple-600">Shop</a>
-            <span class="mx-2">/</span>
-            <span id="breadcrumb-product-name" class="text-gray-800 font-medium">Loading...</span>
+    <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <!-- Breadcrumb Navigation (HCI Heuristic #1: Visibility of System Status) -->
+        <nav aria-label="Breadcrumb" class="flex items-center space-x-2 text-xs text-gray-500 mb-6">
+            <a href="index.html" class="hover:text-purple-600 transition">Home</a>
+            <span>/</span>
+            <a href="products.html" class="hover:text-purple-600 transition">Shop</a>
+            <span>/</span>
+            <span id="breadcrumb-product-name" class="text-purple-700 font-semibold truncate max-w-xs sm:max-w-md" aria-current="page">Loading...</span>
         </nav>
 
         <div id="product-content" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -49,7 +49,70 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recently Viewed Section (HCI Heuristic #6: Recognition Rather Than Recall) -->
+        <section id="recently-viewed-section" class="mt-16 hidden">
+            <div class="border-t pt-10">
+                <h2 class="text-2xl font-black text-gray-900 mb-6">Recently Viewed by You</h2>
+                <div id="recently-viewed-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
     </main>
+
+    <!-- Size Guide Modal (HCI Heuristic #10: Help and Documentation) -->
+    <div id="size-guide-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 hidden p-4" role="dialog" aria-modal="true" aria-labelledby="size-guide-title">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative transform transition-all">
+            <button onclick="closeSizeGuide()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 p-2 focus:outline-none" aria-label="Close size guide">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 id="size-guide-title" class="text-2xl font-black text-gray-900 mb-2">Women's Size Guide</h3>
+            <p class="text-gray-500 text-xs mb-6">Standard international sizing measurements in inches (and cm).</p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-purple-50 text-purple-900 border-b border-purple-100">
+                            <th class="p-3 font-bold">Size</th>
+                            <th class="p-3 font-bold">Bust</th>
+                            <th class="p-3 font-bold">Waist</th>
+                            <th class="p-3 font-bold">Hips</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr>
+                            <td class="p-3 font-bold text-purple-700">S (US 4-6)</td>
+                            <td class="p-3 text-gray-600">33-35" (84-89 cm)</td>
+                            <td class="p-3 text-gray-600">26-27" (66-69 cm)</td>
+                            <td class="p-3 text-gray-600">36-37" (91-94 cm)</td>
+                        </tr>
+                        <tr class="bg-gray-50/50">
+                            <td class="p-3 font-bold text-purple-700">M (US 8-10)</td>
+                            <td class="p-3 text-gray-600">36-37" (91-94 cm)</td>
+                            <td class="p-3 text-gray-600">28-30" (71-76 cm)</td>
+                            <td class="p-3 text-gray-600">38-40" (97-102 cm)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-purple-700">L (US 12-14)</td>
+                            <td class="p-3 text-gray-600">38-40" (97-102 cm)</td>
+                            <td class="p-3 text-gray-600">31-33" (79-84 cm)</td>
+                            <td class="p-3 text-gray-600">41-43" (104-109 cm)</td>
+                        </tr>
+                        <tr class="bg-gray-50/50">
+                            <td class="p-3 font-bold text-purple-700">XL (US 16-18)</td>
+                            <td class="p-3 text-gray-600">41-43" (104-109 cm)</td>
+                            <td class="p-3 text-gray-600">34-36" (86-91 cm)</td>
+                            <td class="p-3 text-gray-600">44-46" (112-117 cm)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 p-3.5 bg-gray-50 rounded-xl text-xs text-gray-600 space-y-1">
+                <p>💡 <strong>How to measure:</strong> Keep the measuring tape comfortable and parallel to the floor.</p>
+                <p>👗 If you fall between two sizes, we recommend selecting the larger size for a relaxed drape.</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer Container -->
     <div id="footer-container" class="mt-auto"></div>
@@ -82,6 +145,12 @@
                 document.title = `${currentProduct.name} - Textile Haven`;
 
                 renderProduct(currentProduct);
+
+                // HCI Heuristic #6: Recognition rather than recall
+                if (typeof RecentlyViewed !== 'undefined') {
+                    RecentlyViewed.add(currentProduct);
+                    renderRecentlyViewed();
+                }
             } catch (err) {
                 console.error(err);
                 container.innerHTML = '<div class="p-12 text-center text-red-500">Error loading product details from Spring Boot backend.</div>';
@@ -104,18 +173,18 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 p-6 md:p-10">
                 <!-- Images Column -->
                 <div>
-                    <div class="relative aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden shadow-inner border">
+                    <div class="relative aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden shadow-inner border border-gray-100">
                         <img id="main-product-img" src="${mainImg}" alt="${escapeHtml(product.name)}"
                              class="w-full h-full object-cover transition-opacity duration-300"
                              onerror="handleImageError(this)">
                     </div>
                     ${secondaryImg ? `
                         <div class="flex gap-3 mt-4">
-                            <button onclick="switchImage('${mainImg}')" class="w-20 h-24 rounded-lg overflow-hidden border-2 border-purple-600 focus:outline-none">
-                                <img src="${mainImg}" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                            <button onclick="switchImage('${mainImg}', this)" class="w-20 h-24 rounded-xl overflow-hidden border-2 border-purple-600 focus:outline-none transition group">
+                                <img src="${mainImg}" class="w-full h-full object-cover group-hover:scale-105 transition" onerror="handleImageError(this)">
                             </button>
-                            <button onclick="switchImage('${secondaryImg}')" class="w-20 h-24 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-purple-600 focus:outline-none">
-                                <img src="${secondaryImg}" class="w-full h-full object-cover" onerror="handleImageError(this)">
+                            <button onclick="switchImage('${secondaryImg}', this)" class="w-20 h-24 rounded-xl overflow-hidden border-2 border-gray-200 hover:border-purple-600 focus:outline-none transition group">
+                                <img src="${secondaryImg}" class="w-full h-full object-cover group-hover:scale-105 transition" onerror="handleImageError(this)">
                             </button>
                         </div>
                     ` : ''}
@@ -126,26 +195,47 @@
                     <div>
                         <div class="flex items-center gap-3">
                             <span class="text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
-                                hasStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                hasStock ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                             }">
-                                ${hasStock ? `In Stock (${product.totalStock} available)` : 'Out of Stock'}
+                                ${hasStock ? `In Stock (${product.totalStock} available)` : 'Sold Out'}
                             </span>
+                            <span class="text-xs text-gray-500 font-medium">SKU: TH-${product.id.toString().padStart(4, '0')}</span>
                         </div>
 
-                        <h1 class="text-3xl md:text-4xl font-black text-gray-900 mt-3">${escapeHtml(product.name)}</h1>
-                        <p class="text-3xl font-extrabold text-purple-600 mt-4">${ProductAPI.formatPrice(product.price)}</p>
+                        <h1 class="text-3xl md:text-4xl font-black text-gray-900 mt-3 leading-tight">${escapeHtml(product.name)}</h1>
+                        <p class="text-3xl font-black text-purple-700 mt-4">${ProductAPI.formatPrice(product.price)}</p>
 
-                        <div class="mt-6 border-t pt-4">
-                            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Description</h3>
-                            <p class="text-gray-600 mt-2 leading-relaxed text-sm md:text-base">${escapeHtml(product.description || 'No description provided.')}</p>
+                        <!-- Tabbed Information (HCI: Aesthetic & Minimalist Design) -->
+                        <div class="mt-6 border-b border-gray-200">
+                            <div class="flex space-x-6 text-sm font-bold">
+                                <button type="button" onclick="switchTab('desc')" id="tab-btn-desc" class="pb-2 text-purple-600 border-b-2 border-purple-600 focus:outline-none">Overview</button>
+                                <button type="button" onclick="switchTab('fabric')" id="tab-btn-fabric" class="pb-2 text-gray-500 hover:text-gray-700 border-b-2 border-transparent focus:outline-none">Fabric & Care</button>
+                                <button type="button" onclick="switchTab('shipping')" id="tab-btn-shipping" class="pb-2 text-gray-500 hover:text-gray-700 border-b-2 border-transparent focus:outline-none">Shipping & Returns</button>
+                            </div>
                         </div>
 
-                        <!-- Sizes Selection -->
+                        <div id="tab-content-desc" class="py-4 text-gray-600 text-sm leading-relaxed">
+                            <p>${escapeHtml(product.description || 'Elevate your wardrobe with this carefully crafted piece. Premium quality stitching, breathable materials, and elegant drape designed for comfort and modern style.')}</p>
+                        </div>
+
+                        <div id="tab-content-fabric" class="py-4 text-gray-600 text-sm leading-relaxed hidden space-y-2">
+                            <p>🧵 <strong>Material:</strong> 100% Breathable Premium Cotton & Linen Blend.</p>
+                            <p>🧼 <strong>Care Instructions:</strong> Machine wash cold with like colors on gentle cycle. Do not bleach. Tumble dry low or line dry in shade. Warm iron if needed.</p>
+                        </div>
+
+                        <div id="tab-content-shipping" class="py-4 text-gray-600 text-sm leading-relaxed hidden space-y-2">
+                            <p>🚚 <strong>Standard Delivery:</strong> 3-5 business days. Free shipping on orders over $75.</p>
+                            <p>🔄 <strong>30-Day Easy Returns:</strong> If you are not completely satisfied, return within 30 days in original condition for a full refund or exchange.</p>
+                        </div>
+
+                        <!-- Sizes Selection (HCI: Error Prevention & Match Real World) -->
                         ${product.sizes && product.sizes.length > 0 ? `
-                            <div class="mt-6 border-t pt-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Select Size</h3>
-                                    <span id="selected-size-label" class="text-xs text-purple-600 font-semibold"></span>
+                            <div class="mt-4 border-t pt-4">
+                                <div class="flex justify-between items-center mb-2.5">
+                                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Select Size</h3>
+                                    <button type="button" onclick="openSizeGuide()" class="text-xs text-purple-600 hover:text-purple-800 underline font-semibold flex items-center gap-1 focus:outline-none">
+                                        📏 Size Guide
+                                    </button>
                                 </div>
                                 <div class="flex flex-wrap gap-2.5">
                                     ${product.sizes.map(size => {
@@ -154,11 +244,11 @@
                                         return `
                                         <button type="button"
                                             onclick="selectSize(${size.sizeId}, ${size.stockQuantity}, '${escapeHtml(size.name)}')"
-                                            ${!isAvailable ? 'disabled' : ''}
+                                            ${!isAvailable ? 'disabled title="Out of stock in this size"' : ''}
                                             id="size-btn-${size.sizeId}"
                                             class="px-4 py-2 rounded-xl text-sm font-bold border transition ${
                                                 isSelected 
-                                                    ? 'bg-purple-600 text-white border-purple-600 shadow'
+                                                    ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
                                                     : isAvailable 
                                                         ? 'bg-white text-gray-800 border-gray-300 hover:border-purple-600'
                                                         : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-60'
@@ -172,29 +262,29 @@
                             </div>
                         ` : ''}
 
-                        <!-- Quantity Selector -->
-                        <div class="mt-6 border-t pt-4">
-                            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Quantity</h3>
+                        <!-- Quantity Selector (HCI: Direct Manipulation) -->
+                        <div class="mt-4 border-t pt-4">
+                            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Quantity</h3>
                             <div class="flex items-center space-x-3">
-                                <button type="button" onclick="adjustQty(-1)" class="w-10 h-10 rounded-lg border border-gray-300 font-bold hover:bg-gray-100 text-gray-600 flex items-center justify-center">-</button>
-                                <span id="qty-display" class="w-12 text-center font-bold text-lg text-gray-800">1</span>
-                                <button type="button" onclick="adjustQty(1)" class="w-10 h-10 rounded-lg border border-gray-300 font-bold hover:bg-gray-100 text-gray-600 flex items-center justify-center">+</button>
+                                <button type="button" onclick="adjustQty(-1)" aria-label="Decrease quantity" class="w-10 h-10 rounded-xl border border-gray-300 font-bold hover:bg-gray-100 text-gray-600 flex items-center justify-center transition">-</button>
+                                <span id="qty-display" class="w-12 text-center font-black text-lg text-gray-900" aria-live="polite">1</span>
+                                <button type="button" onclick="adjustQty(1)" aria-label="Increase quantity" class="w-10 h-10 rounded-xl border border-gray-300 font-bold hover:bg-gray-100 text-gray-600 flex items-center justify-center transition">+</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
+                    <!-- Action Buttons (Fitts's Law: Prominent touch targets) -->
                     <div class="mt-8 pt-6 border-t flex flex-col sm:flex-row gap-4">
                         <button type="button" id="add-to-cart-btn" onclick="handleAddToCart()"
                             ${!hasStock ? 'disabled' : ''}
                             class="flex-1 py-4 px-6 rounded-xl font-bold text-white text-base shadow-lg transition flex items-center justify-center space-x-2 ${
-                                hasStock ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-300 cursor-not-allowed'
+                                hasStock ? 'bg-purple-600 hover:bg-purple-700 active:scale-98' : 'bg-gray-300 cursor-not-allowed'
                             }">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                            <span>${hasStock ? 'Add to Cart' : 'Out of Stock'}</span>
+                            <span id="add-btn-text">${hasStock ? 'Add to Cart' : 'Out of Stock'}</span>
                         </button>
                         <a href="products.html" class="px-6 py-4 rounded-xl border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-center transition">
-                            Continue Shopping
+                            Back to Shop
                         </a>
                     </div>
                 </div>
@@ -202,9 +292,39 @@
             `;
         }
 
-        function switchImage(src) {
+        function switchImage(src, btn) {
             const img = document.getElementById('main-product-img');
             if (img) img.src = src;
+            if (btn) {
+                btn.parentElement.querySelectorAll('button').forEach(b => {
+                    b.className = 'w-20 h-24 rounded-xl overflow-hidden border-2 border-gray-200 hover:border-purple-600 focus:outline-none transition group';
+                });
+                btn.className = 'w-20 h-24 rounded-xl overflow-hidden border-2 border-purple-600 focus:outline-none transition group';
+            }
+        }
+
+        function switchTab(tab) {
+            ['desc', 'fabric', 'shipping'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const content = document.getElementById(`tab-content-${t}`);
+                if (btn && content) {
+                    if (t === tab) {
+                        btn.className = 'pb-2 text-purple-600 border-b-2 border-purple-600 focus:outline-none';
+                        content.classList.remove('hidden');
+                    } else {
+                        btn.className = 'pb-2 text-gray-500 hover:text-gray-700 border-b-2 border-transparent focus:outline-none';
+                        content.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        function openSizeGuide() {
+            document.getElementById('size-guide-modal')?.classList.remove('hidden');
+        }
+
+        function closeSizeGuide() {
+            document.getElementById('size-guide-modal')?.classList.add('hidden');
         }
 
         function selectSize(sizeId, stock, name) {
@@ -215,10 +335,8 @@
             });
             const activeBtn = document.getElementById(`size-btn-${sizeId}`);
             if (activeBtn) {
-                activeBtn.className = 'px-4 py-2 rounded-xl text-sm font-bold border transition bg-purple-600 text-white border-purple-600 shadow';
+                activeBtn.className = 'px-4 py-2 rounded-xl text-sm font-bold border transition bg-purple-600 text-white border-purple-600 shadow-sm';
             }
-            const label = document.getElementById('selected-size-label');
-            if (label) label.textContent = `Selected: ${name}`;
         }
 
         function adjustQty(delta) {
@@ -234,23 +352,63 @@
             }
 
             const btn = document.getElementById('add-to-cart-btn');
-            const originalText = btn.innerHTML;
+            const originalHtml = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<span>Adding...</span>';
 
             try {
                 const res = await CartAPI.addToCart(currentProduct.id, selectedSizeId, currentQuantity);
                 if (res.success) {
-                    showToast('Added to cart successfully!', 'success');
+                    btn.className = 'flex-1 py-4 px-6 rounded-xl font-bold text-white text-base shadow-lg transition flex items-center justify-center space-x-2 bg-emerald-600';
+                    btn.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <span>Added to Cart!</span>
+                    `;
+                    showToast('Item successfully added to your cart!', 'success', {
+                        text: 'View Cart',
+                        onClick: () => { window.location.href = 'cart.html'; }
+                    });
+
+                    setTimeout(() => {
+                        btn.className = 'flex-1 py-4 px-6 rounded-xl font-bold text-white text-base shadow-lg transition flex items-center justify-center space-x-2 bg-purple-600 hover:bg-purple-700 active:scale-98';
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                    }, 1600);
                 } else {
                     showToast(res.message || 'Failed to add to cart', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
                 }
             } catch (e) {
                 showToast('Network error adding to cart', 'error');
-            } finally {
                 btn.disabled = false;
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalHtml;
             }
+        }
+
+        function renderRecentlyViewed() {
+            const section = document.getElementById('recently-viewed-section');
+            const grid = document.getElementById('recently-viewed-grid');
+            if (!section || !grid || typeof RecentlyViewed === 'undefined') return;
+
+            const items = RecentlyViewed.get().filter(p => !currentProduct || p.id !== currentProduct.id).slice(0, 4);
+            if (items.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            grid.innerHTML = items.map(p => `
+                <div class="bg-white rounded-xl shadow-xs hover:shadow-md border border-gray-100 overflow-hidden group transition">
+                    <a href="product-details.html?id=${p.id}" class="block aspect-[3/4] bg-gray-100 overflow-hidden">
+                        <img src="${ProductAPI.formatImageUrl(p.mainImage)}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover group-hover:scale-105 transition" onerror="handleImageError(this)">
+                    </a>
+                    <div class="p-3">
+                        <h4 class="font-bold text-xs text-gray-900 truncate"><a href="product-details.html?id=${p.id}">${escapeHtml(p.name)}</a></h4>
+                        <div class="text-sm font-black text-purple-700 mt-1">${ProductAPI.formatPrice(p.price)}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         document.addEventListener('DOMContentLoaded', loadProductDetails);

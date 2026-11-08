@@ -47,23 +47,26 @@ public class FileStorageService {
             Path targetLocation = this.uploadLocation.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            // Also copy to frontend assets and static resources if they exist
+            // Determine project root path accurately
+            Path currentDir = Paths.get("").toAbsolutePath();
+            Path rootDir = currentDir.endsWith("springboot-backend") ? currentDir.getParent() : currentDir;
+
             try {
-                Path frontendPath = Paths.get("../frontend/assets/images").toAbsolutePath().resolve(uniqueFilename);
+                Path frontendPath = rootDir.resolve("frontend/assets/images").resolve(uniqueFilename);
                 Files.createDirectories(frontendPath.getParent());
                 Files.copy(targetLocation, frontendPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception ignored) {}
 
             try {
-                Path staticPath = Paths.get("src/main/resources/static/assets/images").toAbsolutePath().resolve(uniqueFilename);
-                Files.createDirectories(staticPath.getParent());
-                Files.copy(targetLocation, staticPath, StandardCopyOption.REPLACE_EXISTING);
+                Path backendStaticPath = rootDir.resolve("springboot-backend/src/main/resources/static/assets/images").resolve(uniqueFilename);
+                Files.createDirectories(backendStaticPath.getParent());
+                Files.copy(targetLocation, backendStaticPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception ignored) {}
 
             try {
-                Path targetStaticPath = Paths.get("target/classes/static/assets/images").toAbsolutePath().resolve(uniqueFilename);
-                Files.createDirectories(targetStaticPath.getParent());
-                Files.copy(targetLocation, targetStaticPath, StandardCopyOption.REPLACE_EXISTING);
+                Path backendTargetPath = rootDir.resolve("springboot-backend/target/classes/static/assets/images").resolve(uniqueFilename);
+                Files.createDirectories(backendTargetPath.getParent());
+                Files.copy(targetLocation, backendTargetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception ignored) {}
 
             return "assets/images/" + uniqueFilename;
